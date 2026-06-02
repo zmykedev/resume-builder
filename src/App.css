@@ -314,8 +314,8 @@ textarea {
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #999;
-  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0;
   text-align: center;
 }
 
@@ -436,11 +436,22 @@ textarea {
   position: fixed;
   inset: 0;
   z-index: 99;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: default;
+}
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
 }
 .color-dropdown {
   position: absolute;
   top: calc(100% + 8px);
-  right: 0;
+  left: 0;
   background: white;
   border: 1px solid #e0e5ec;
   border-radius: 8px;
@@ -659,14 +670,15 @@ textarea {
 
 /* ===== PREVIEW HEADER WITH TOGGLE ===== */
 .preview-header {
+  width: 794px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
-}
-.preview-header .preview-label {
-  margin-bottom: 0;
+  padding: 0.75rem 1.2rem;
+  background: var(--blue-dark);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
 }
 
 .preview-toolbar {
@@ -687,11 +699,11 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border: 1px solid #dde1e7;
+  background: #1a5a9e;
+  border: 1px solid #2a6aae;
   border-radius: 6px;
   cursor: pointer;
-  color: #555;
+  color: white;
   transition: all 0.15s;
   padding: 0;
 }
@@ -700,9 +712,9 @@ textarea {
   height: 14px;
 }
 .zoom-btn:hover:not(:disabled) {
-  background: var(--blue-light);
-  border-color: var(--blue-acc);
-  color: var(--blue-dark);
+  background: #2268b5;
+  border-color: #4080c8;
+  color: white;
 }
 .zoom-btn:disabled {
   opacity: 0.35;
@@ -710,7 +722,7 @@ textarea {
 }
 .zoom-label {
   font-size: 10px;
-  color: #888;
+  color: #a8c8ee;
   min-width: 36px;
   text-align: center;
   font-weight: 500;
@@ -723,7 +735,8 @@ textarea {
 /* ===== ATS TOGGLE ===== */
 .ats-toggle {
   display: flex;
-  background: #e8edf3;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
   padding: 2px;
   gap: 2px;
@@ -736,7 +749,7 @@ textarea {
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  color: #666;
+  color: rgba(255, 255, 255, 0.65);
   background: transparent;
   transition: all 0.15s;
 }
@@ -744,10 +757,10 @@ textarea {
   background: white;
   color: var(--blue-dark);
   font-weight: 700;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .ats-toggle-btn:hover:not(.active) {
-  color: var(--blue-mid);
+  color: white;
 }
 
 /* ===== ATS LAYOUT STYLES ===== */

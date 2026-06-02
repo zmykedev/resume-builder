@@ -1,551 +1,1101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV Maker</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --blue-dark: #0C447C;
-    --blue-mid: #185FA5;
-    --blue-acc: #378ADD;
-    --blue-light: #E6F1FB;
-    --blue-text: #B5D4F4;
-    --blue-muted: #85B7EB;
-    --gray-text: #1a1a1a;
-    --gray-mid: #555;
-    --gray-light: #e8e8e8;
-  }
-  body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; min-height: 100vh; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fast CV</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --blue-dark: #0c447c;
+        --blue-mid: #185fa5;
+        --blue-acc: #378add;
+        --blue-light: #e6f1fb;
+        --blue-text: #b5d4f4;
+        --blue-muted: #85b7eb;
+        --gray-text: #1a1a1a;
+        --gray-mid: #555;
+        --gray-light: #e8e8e8;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: #f0f2f5;
+        min-height: 100vh;
+      }
 
-  /* APP SHELL */
-  .app { display: grid; grid-template-columns: 380px 1fr; min-height: 100vh; }
+      /* APP SHELL */
+      .app {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        min-height: 100vh;
+      }
 
-  /* EDITOR PANEL */
-  .editor-panel {
-    background: #fff;
-    border-right: 1px solid #e0e5ec;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-  }
-  .editor-header {
-    padding: 1.2rem 1.4rem;
-    border-bottom: 1px solid #e0e5ec;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--blue-dark);
-    color: white;
-  }
-  .editor-header h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
-  .editor-header span { font-size: 11px; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; }
-  .editor-body { flex: 1; overflow-y: auto; padding: 1.2rem 1.4rem; }
-  .editor-footer {
-    padding: 1rem 1.4rem;
-    border-top: 1px solid #e0e5ec;
-    background: #fafafa;
-  }
+      /* EDITOR PANEL */
+      .editor-panel {
+        background: #fff;
+        border-right: 1px solid #e0e5ec;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+      }
+      .editor-header {
+        padding: 1.2rem 1.4rem;
+        border-bottom: 1px solid #e0e5ec;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--blue-dark);
+        color: white;
+      }
+      .editor-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .editor-header span {
+        font-size: 11px;
+        opacity: 0.7;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .editor-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.2rem 1.4rem;
+      }
+      .editor-footer {
+        padding: 1rem 1.4rem;
+        border-top: 1px solid #e0e5ec;
+        background: #fafafa;
+      }
 
-  /* SECTION GROUPS */
-  .field-group { margin-bottom: 1.4rem; }
-  .group-title {
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--blue-mid);
-    font-weight: 700;
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1.5px solid var(--blue-light);
-  }
-  label { display: block; font-size: 11px; color: #666; margin-bottom: 3px; font-weight: 500; }
-  input[type="text"], textarea {
-    width: 100%;
-    padding: 7px 10px;
-    border: 1px solid #dde1e7;
-    border-radius: 6px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    color: #333;
-    background: #fafbfc;
-    margin-bottom: 8px;
-    transition: border 0.15s;
-    outline: none;
-  }
-  input[type="text"]:focus, textarea:focus { border-color: var(--blue-acc); background: #fff; }
-  textarea { resize: vertical; min-height: 54px; line-height: 1.5; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 80px; gap: 6px; }
+      /* SECTION GROUPS */
+      .field-group {
+        margin-bottom: 1.4rem;
+      }
+      .group-title {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--blue-mid);
+        font-weight: 700;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1.5px solid var(--blue-light);
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 3px;
+        font-weight: 500;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid #dde1e7;
+        border-radius: 6px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 12px;
+        color: #333;
+        background: #fafbfc;
+        margin-bottom: 8px;
+        transition: border 0.15s;
+        outline: none;
+      }
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: var(--blue-acc);
+        background: #fff;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 54px;
+        line-height: 1.5;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .three-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr 80px;
+        gap: 6px;
+      }
 
-  /* REPEATING ITEMS */
-  .repeating-item {
-    background: #f7f9fc;
-    border: 1px solid #e8edf3;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    position: relative;
-  }
-  .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .item-label { font-size: 11px; font-weight: 600; color: var(--blue-dark); }
-  .remove-btn {
-    background: none; border: none; cursor: pointer;
-    color: #c00; font-size: 16px; line-height: 1; padding: 0 4px;
-    opacity: 0.6; transition: opacity 0.15s;
-  }
-  .remove-btn:hover { opacity: 1; }
-  .add-btn {
-    width: 100%;
-    padding: 7px;
-    background: var(--blue-light);
-    border: 1px dashed var(--blue-acc);
-    border-radius: 6px;
-    color: var(--blue-mid);
-    font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.15s;
-    margin-top: 4px;
-  }
-  .add-btn:hover { background: #d0e8fa; }
+      /* REPEATING ITEMS */
+      .repeating-item {
+        background: #f7f9fc;
+        border: 1px solid #e8edf3;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        position: relative;
+      }
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .item-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--blue-dark);
+      }
+      .remove-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #c00;
+        font-size: 16px;
+        line-height: 1;
+        padding: 0 4px;
+        opacity: 0.6;
+        transition: opacity 0.15s;
+      }
+      .remove-btn:hover {
+        opacity: 1;
+      }
+      .add-btn {
+        width: 100%;
+        padding: 7px;
+        background: var(--blue-light);
+        border: 1px dashed var(--blue-acc);
+        border-radius: 6px;
+        color: var(--blue-mid);
+        font-size: 12px;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.15s;
+        margin-top: 4px;
+      }
+      .add-btn:hover {
+        background: #d0e8fa;
+      }
 
-  /* BULLETS */
-  .bullet-row { display: flex; gap: 6px; align-items: center; margin-bottom: 5px; }
-  .bullet-row input { margin-bottom: 0; flex: 1; }
-  .bullet-remove { background: none; border: none; cursor: pointer; color: #aaa; font-size: 14px; flex-shrink: 0; }
-  .bullet-remove:hover { color: #c00; }
-  .bullet-add { font-size: 11px; color: var(--blue-mid); background: none; border: none; cursor: pointer; padding: 2px 0; text-decoration: underline; }
+      /* BULLETS */
+      .bullet-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+      .bullet-row input {
+        margin-bottom: 0;
+        flex: 1;
+      }
+      .bullet-remove {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #aaa;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .bullet-remove:hover {
+        color: #c00;
+      }
+      .bullet-add {
+        font-size: 11px;
+        color: var(--blue-mid);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 0;
+        text-decoration: underline;
+      }
 
-  /* DOWNLOAD BTN */
-  .download-btn {
-    width: 100%;
-    padding: 11px;
-    background: var(--blue-dark);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Playfair Display', serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: background 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .download-btn:hover { background: var(--blue-mid); }
-  .download-btn:active { transform: scale(0.98); }
-  .download-btn svg { width: 16px; height: 16px; }
+      /* DOWNLOAD BTN */
+      .download-btn {
+        width: 100%;
+        padding: 11px;
+        background: var(--blue-dark);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-family: "Playfair Display", serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        transition:
+          background 0.2s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .download-btn:hover {
+        background: var(--blue-mid);
+      }
+      .download-btn:active {
+        transform: scale(0.98);
+      }
+      .download-btn svg {
+        width: 16px;
+        height: 16px;
+      }
 
-  /* PREVIEW PANEL */
-  .preview-panel { padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-  .preview-label {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: #999; margin-bottom: 1rem; text-align: center;
-  }
+      /* PREVIEW PANEL */
+      .preview-panel {
+        padding: 2rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .preview-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
 
-  /* ===== CV STYLES ===== */
-  #cv-output {
-    width: 794px;
-    min-height: 1123px;
-    background: white;
-    box-shadow: 0 4px 40px rgba(0,0,0,0.12);
-    border-radius: 4px;
-    display: grid;
-    grid-template-columns: 210px 1fr;
-    overflow: hidden;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .cv-sidebar {
-    background: var(--blue-dark);
-    padding: 1.8rem 1.3rem;
-    color: white;
-  }
-  .cv-avatar {
-    width: 58px; height: 58px; border-radius: 50%;
-    background: var(--blue-mid);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 17px; font-weight: 700; color: var(--blue-light);
-    margin-bottom: 1rem;
-    border: 2px solid var(--blue-acc);
-  }
-  .cv-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: white; line-height: 1.25; margin-bottom: 3px; }
-  .cv-role { font-size: 8px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--blue-muted); margin-bottom: 1.1rem; }
-  .cv-divider { border: none; border-top: 0.5px solid var(--blue-mid); margin-bottom: 1rem; }
-  .cv-s-label { font-size: 7.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-muted); margin-bottom: 6px; }
-  .cv-s-block { margin-bottom: 1rem; }
-  .cv-s-item { font-size: 10.5px; color: var(--blue-text); line-height: 1.6; margin-bottom: 2px; }
-  .cv-s-summary { font-size: 9.5px; color: var(--blue-text); line-height: 1.65; font-style: italic; }
-  .cv-lang-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .cv-lang-name { font-size: 10.5px; color: white; }
-  .cv-lang-level { font-size: 9.5px; color: var(--blue-muted); }
-  .cv-main { padding: 1.6rem 1.6rem 1.2rem; background: white; }
-  .cv-section { margin-bottom: 1.2rem; }
-  .cv-m-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--blue-mid); font-weight: 500;
-    margin-bottom: 8px; padding-bottom: 4px;
-    border-bottom: 1.5px solid var(--blue-light);
-  }
-  .cv-job { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 0.5px solid var(--gray-light); }
-  .cv-job:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .cv-job-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 2px; }
-  .cv-job-title { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 500; color: var(--gray-text); line-height: 1.3; }
-  .cv-job-date { font-size: 8.5px; color: var(--blue-mid); font-weight: 500; white-space: nowrap; background: var(--blue-light); padding: 2px 8px; border-radius: 100px; flex-shrink: 0; }
-  .cv-job-co { font-size: 10px; color: #777; margin-bottom: 4px; }
-  .cv-bullets { list-style: none; padding: 0; }
-  .cv-bullets li { font-size: 10px; line-height: 1.5; color: var(--gray-mid); padding-left: 11px; position: relative; margin-bottom: 2px; }
-  .cv-bullets li::before { content: '–'; position: absolute; left: 0; color: var(--blue-acc); }
-  .cv-skills { display: flex; flex-wrap: wrap; gap: 4px; }
-  .cv-skill { font-size: 9.5px; padding: 2px 9px; border-radius: 100px; border: 0.5px solid var(--blue-text); color: var(--blue-dark); background: var(--blue-light); }
-</style>
-</head>
-<body>
-<div id="root"></div>
+      /* ===== CV STYLES ===== */
+      #cv-output {
+        width: 794px;
+        min-height: 1123px;
+        background: white;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        overflow: hidden;
+        font-family: "DM Sans", sans-serif;
+      }
+      .cv-sidebar {
+        background: var(--blue-dark);
+        padding: 1.8rem 1.3rem;
+        color: white;
+      }
+      .cv-avatar {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: var(--blue-mid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Playfair Display", serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--blue-light);
+        margin-bottom: 1rem;
+        border: 2px solid var(--blue-acc);
+      }
+      .cv-name {
+        font-family: "Playfair Display", serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: white;
+        line-height: 1.25;
+        margin-bottom: 3px;
+      }
+      .cv-role {
+        font-size: 8px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--blue-muted);
+        margin-bottom: 1.1rem;
+      }
+      .cv-divider {
+        border: none;
+        border-top: 0.5px solid var(--blue-mid);
+        margin-bottom: 1rem;
+      }
+      .cv-s-label {
+        font-size: 7.5px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--blue-muted);
+        margin-bottom: 6px;
+      }
+      .cv-s-block {
+        margin-bottom: 1rem;
+      }
+      .cv-s-item {
+        font-size: 10.5px;
+        color: var(--blue-text);
+        line-height: 1.6;
+        margin-bottom: 2px;
+      }
+      .cv-s-summary {
+        font-size: 9.5px;
+        color: var(--blue-text);
+        line-height: 1.65;
+        font-style: italic;
+      }
+      .cv-lang-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .cv-lang-name {
+        font-size: 10.5px;
+        color: white;
+      }
+      .cv-lang-level {
+        font-size: 9.5px;
+        color: var(--blue-muted);
+      }
+      .cv-main {
+        padding: 1.6rem 1.6rem 1.2rem;
+        background: white;
+      }
+      .cv-section {
+        margin-bottom: 1.2rem;
+      }
+      .cv-m-label {
+        font-family: "Playfair Display", serif;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--blue-mid);
+        font-weight: 500;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1.5px solid var(--blue-light);
+      }
+      .cv-job {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 0.5px solid var(--gray-light);
+      }
+      .cv-job:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      .cv-job-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 2px;
+      }
+      .cv-job-title {
+        font-family: "Playfair Display", serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--gray-text);
+        line-height: 1.3;
+      }
+      .cv-job-date {
+        font-size: 8.5px;
+        color: var(--blue-mid);
+        font-weight: 500;
+        white-space: nowrap;
+        background: var(--blue-light);
+        padding: 2px 8px;
+        border-radius: 100px;
+        flex-shrink: 0;
+      }
+      .cv-job-co {
+        font-size: 10px;
+        color: #777;
+        margin-bottom: 4px;
+      }
+      .cv-bullets {
+        list-style: none;
+        padding: 0;
+      }
+      .cv-bullets li {
+        font-size: 10px;
+        line-height: 1.5;
+        color: var(--gray-mid);
+        padding-left: 11px;
+        position: relative;
+        margin-bottom: 2px;
+      }
+      .cv-bullets li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: var(--blue-acc);
+      }
+      .cv-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .cv-skill {
+        font-size: 9.5px;
+        padding: 2px 9px;
+        border-radius: 100px;
+        border: 0.5px solid var(--blue-text);
+        color: var(--blue-dark);
+        background: var(--blue-light);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
 
-<script type="text/babel">
-const { useState, useRef, useCallback } = React;
+    <script type="text/babel">
+      const { useState, useRef, useCallback } = React;
 
-const defaultData = {
-  name: "Maikol Zapata Iriarte",
-  role: "FullStack Developer",
-  email: "zmaikol399@gmail.com",
-  phone: "+569 81514796",
-  location: "Santiago de Chile",
-  birth: "24 Jul 1994",
-  nationality: "Chilena",
-  summary: 'Meta: entregar las mejores soluciones informáticas. "Siempre puedes ser mejor que el día de ayer."',
-  languages: [
-    { id: 1, name: "Español", level: "Nativo" },
-    { id: 2, name: "Inglés", level: "Básico" },
-  ],
-  experience: [
-    { id: 1, title: "FullStack Developer", company: "OTIC · Cámara Chilena de la Construcción", date: "Feb 2023 – Presente", bullets: ["Diseño e implementación de APIs en NestJS aplicando principios DRY y SOLID.", "Gestión de base de datos PostgreSQL con TypeORM; autenticación JWT con Passport y control de roles.", "Testing unitario e integración con Jest + Supertest.", "Automatización de despliegues con Docker y CI/CD (GitHub Actions / Azure Pipelines).", "Desarrollo de microfronts, interfaces responsive; gestión de estado con React Query.", "Trabajo colaborativo en equipos Agile (Scrum/Kanban) junto a QA y UX."] },
-    { id: 2, title: "FullStack Developer", company: "Proyecte", date: "Dic 2022 – Dic 2023", bullets: ["Migración de proyecto en Streamlit a Flask con interfaz en React.", "Conexión con modelos de machine learning (YOLO) para procesamiento de datos.", "Diseño, implementación e integración de la interfaz con la lógica del sistema."] },
-    { id: 3, title: "FullStack Developer", company: "Xbrein", date: "Dic 2021 – Dic 2022", bullets: ["Diseño y desarrollo de APIs según requerimientos del negocio; optimización de rendimiento y escalabilidad.", "Implementación de seguridad, validación y manejo de errores en las APIs.", "Documentación y mantenimiento de APIs para claridad del equipo."] },
-  ],
-  education: [
-    { id: 1, title: "FullStack Developer", school: "Bootcamp Coding Dojo", date: "Jun 2021 – Oct 2021", bullets: ["Desarrollo de apps web con HTML, CSS, JavaScript y Python; Bootstrap y Git.", "Proyectos prácticos de frontend y backend; metodologías ágiles y trabajo en equipo.", "Web Fundamentals HTML, JS, CSS — Coding Dojo · Oct 2021", "Desarrollador FullStack Python — Coding Dojo · Oct 2021"] },
-    { id: 2, title: "Version Control", school: "Meta", date: "Marzo 2026", bullets: [] },
-    { id: 3, title: "Programming with Javascript", school: "Meta", date: "Marzo 2026", bullets: [] },
-    { id: 4, title: "Introduction to Front-end Development", school: "Meta", date: "Dic 2025", bullets: [] },
-  ],
-  skills: ["NestJS","React","TypeScript","PostgreSQL","TypeORM","JWT / Passport","Jest + Supertest","Docker","GitHub Actions","Azure Pipelines","React Query","Flask","Python","YOLO / ML","Scrum / Kanban","Git","Bootstrap","REST APIs"],
-};
+      const defaultData = {
+        name: "Maikol Zapata Iriarte",
+        role: "FullStack Developer",
+        email: "zmaikol399@gmail.com",
+        phone: "+569 81514796",
+        location: "Santiago de Chile",
+        birth: "24 Jul 1994",
+        nationality: "Chilena",
+        summary:
+          'Meta: entregar las mejores soluciones informáticas. "Siempre puedes ser mejor que el día de ayer."',
+        languages: [
+          { id: 1, name: "Español", level: "Nativo" },
+          { id: 2, name: "Inglés", level: "Básico" },
+        ],
+        experience: [
+          {
+            id: 1,
+            title: "FullStack Developer",
+            company: "OTIC · Cámara Chilena de la Construcción",
+            date: "Feb 2023 – Presente",
+            bullets: [
+              "Diseño e implementación de APIs en NestJS aplicando principios DRY y SOLID.",
+              "Gestión de base de datos PostgreSQL con TypeORM; autenticación JWT con Passport y control de roles.",
+              "Testing unitario e integración con Jest + Supertest.",
+              "Automatización de despliegues con Docker y CI/CD (GitHub Actions / Azure Pipelines).",
+              "Desarrollo de microfronts, interfaces responsive; gestión de estado con React Query.",
+              "Trabajo colaborativo en equipos Agile (Scrum/Kanban) junto a QA y UX.",
+            ],
+          },
+          {
+            id: 2,
+            title: "FullStack Developer",
+            company: "Proyecte",
+            date: "Dic 2022 – Dic 2023",
+            bullets: [
+              "Migración de proyecto en Streamlit a Flask con interfaz en React.",
+              "Conexión con modelos de machine learning (YOLO) para procesamiento de datos.",
+              "Diseño, implementación e integración de la interfaz con la lógica del sistema.",
+            ],
+          },
+          {
+            id: 3,
+            title: "FullStack Developer",
+            company: "Xbrein",
+            date: "Dic 2021 – Dic 2022",
+            bullets: [
+              "Diseño y desarrollo de APIs según requerimientos del negocio; optimización de rendimiento y escalabilidad.",
+              "Implementación de seguridad, validación y manejo de errores en las APIs.",
+              "Documentación y mantenimiento de APIs para claridad del equipo.",
+            ],
+          },
+        ],
+        education: [
+          {
+            id: 1,
+            title: "FullStack Developer",
+            school: "Bootcamp Coding Dojo",
+            date: "Jun 2021 – Oct 2021",
+            bullets: [
+              "Desarrollo de apps web con HTML, CSS, JavaScript y Python; Bootstrap y Git.",
+              "Proyectos prácticos de frontend y backend; metodologías ágiles y trabajo en equipo.",
+              "Web Fundamentals HTML, JS, CSS — Coding Dojo · Oct 2021",
+              "Desarrollador FullStack Python — Coding Dojo · Oct 2021",
+            ],
+          },
+          {
+            id: 2,
+            title: "Version Control",
+            school: "Meta",
+            date: "Marzo 2026",
+            bullets: [],
+          },
+          {
+            id: 3,
+            title: "Programming with Javascript",
+            school: "Meta",
+            date: "Marzo 2026",
+            bullets: [],
+          },
+          {
+            id: 4,
+            title: "Introduction to Front-end Development",
+            school: "Meta",
+            date: "Dic 2025",
+            bullets: [],
+          },
+        ],
+        skills: [
+          "NestJS",
+          "React",
+          "TypeScript",
+          "PostgreSQL",
+          "TypeORM",
+          "JWT / Passport",
+          "Jest + Supertest",
+          "Docker",
+          "GitHub Actions",
+          "Azure Pipelines",
+          "React Query",
+          "Flask",
+          "Python",
+          "YOLO / ML",
+          "Scrum / Kanban",
+          "Git",
+          "Bootstrap",
+          "REST APIs",
+        ],
+      };
 
-let nextId = 100;
-const uid = () => ++nextId;
+      let nextId = 100;
+      const uid = () => ++nextId;
 
-function TextField({ label, value, onChange, multiline, placeholder }) {
-  return (
-    <div>
-      {label && <label>{label}</label>}
-      {multiline
-        ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
-        : <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />}
-    </div>
-  );
-}
-
-function BulletList({ bullets, onChange }) {
-  const update = (i, v) => { const b = [...bullets]; b[i] = v; onChange(b); };
-  const remove = (i) => onChange(bullets.filter((_, j) => j !== i));
-  const add = () => onChange([...bullets, ""]);
-  return (
-    <div>
-      <label>Puntos clave</label>
-      {bullets.map((b, i) => (
-        <div className="bullet-row" key={i}>
-          <input type="text" value={b} onChange={e => update(i, e.target.value)} placeholder="Describe un logro o responsabilidad..." />
-          <button className="bullet-remove" onClick={() => remove(i)}>✕</button>
-        </div>
-      ))}
-      <button className="bullet-add" onClick={add}>+ agregar punto</button>
-    </div>
-  );
-}
-
-function RepeatingSection({ title, items, onAdd, onRemove, renderItem, emptyItem }) {
-  return (
-    <div className="field-group">
-      <div className="group-title">{title}</div>
-      {items.map((item, i) => (
-        <div className="repeating-item" key={item.id}>
-          <div className="item-header">
-            <span className="item-label">{item.title || item.name || `Item ${i+1}`}</span>
-            <button className="remove-btn" onClick={() => onRemove(item.id)}>×</button>
+      function TextField({ label, value, onChange, multiline, placeholder }) {
+        return (
+          <div>
+            {label && <label>{label}</label>}
+            {multiline ? (
+              <textarea
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+              />
+            ) : (
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+              />
+            )}
           </div>
-          {renderItem(item, i)}
-        </div>
-      ))}
-      <button className="add-btn" onClick={() => onAdd({ id: uid(), ...emptyItem })}>+ Agregar {title.toLowerCase()}</button>
-    </div>
-  );
-}
+        );
+      }
 
-function Editor({ data, setData }) {
-  const upd = (k, v) => setData(d => ({ ...d, [k]: v }));
-  const updItem = (key, id, field, val) =>
-    setData(d => ({ ...d, [key]: d[key].map(it => it.id === id ? { ...it, [field]: val } : it) }));
-  const addItem = (key, item) => setData(d => ({ ...d, [key]: [...d[key], item] }));
-  const removeItem = (key, id) => setData(d => ({ ...d, [key]: d[key].filter(it => it.id !== id) }));
-  const updBullets = (key, id, bullets) =>
-    setData(d => ({ ...d, [key]: d[key].map(it => it.id === id ? { ...it, bullets } : it) }));
-
-  const [skillInput, setSkillInput] = useState("");
-
-  return (
-    <div className="editor-body">
-      <div className="field-group">
-        <div className="group-title">Datos Personales</div>
-        <TextField label="Nombre completo" value={data.name} onChange={v => upd("name", v)} />
-        <TextField label="Rol / Título profesional" value={data.role} onChange={v => upd("role", v)} />
-        <div className="two-col">
-          <TextField label="Email" value={data.email} onChange={v => upd("email", v)} />
-          <TextField label="Teléfono" value={data.phone} onChange={v => upd("phone", v)} />
-        </div>
-        <div className="two-col">
-          <TextField label="Ubicación" value={data.location} onChange={v => upd("location", v)} />
-          <TextField label="Nacionalidad" value={data.nationality} onChange={v => upd("nationality", v)} />
-        </div>
-        <TextField label="Fecha de nacimiento" value={data.birth} onChange={v => upd("birth", v)} />
-        <TextField label="Perfil / Resumen" value={data.summary} onChange={v => upd("summary", v)} multiline />
-      </div>
-
-      <div className="field-group">
-        <div className="group-title">Idiomas</div>
-        {data.languages.map(l => (
-          <div className="repeating-item" key={l.id}>
-            <div className="item-header">
-              <span className="item-label">{l.name || "Idioma"}</span>
-              <button className="remove-btn" onClick={() => removeItem("languages", l.id)}>×</button>
-            </div>
-            <div className="two-col">
-              <input type="text" placeholder="Idioma" value={l.name} onChange={e => updItem("languages", l.id, "name", e.target.value)} />
-              <input type="text" placeholder="Nivel" value={l.level} onChange={e => updItem("languages", l.id, "level", e.target.value)} />
-            </div>
-          </div>
-        ))}
-        <button className="add-btn" onClick={() => addItem("languages", { id: uid(), name: "", level: "" })}>+ Agregar idioma</button>
-      </div>
-
-      <RepeatingSection
-        title="Experiencia"
-        items={data.experience}
-        emptyItem={{ title: "", company: "", date: "", bullets: [""] }}
-        onAdd={item => addItem("experience", item)}
-        onRemove={id => removeItem("experience", id)}
-        renderItem={(item) => (
-          <>
-            <TextField label="Cargo" value={item.title} onChange={v => updItem("experience", item.id, "title", v)} />
-            <div className="two-col">
-              <TextField label="Empresa" value={item.company} onChange={v => updItem("experience", item.id, "company", v)} />
-              <TextField label="Período" value={item.date} onChange={v => updItem("experience", item.id, "date", v)} />
-            </div>
-            <BulletList bullets={item.bullets} onChange={b => updBullets("experience", item.id, b)} />
-          </>
-        )}
-      />
-
-      <RepeatingSection
-        title="Educación"
-        items={data.education}
-        emptyItem={{ title: "", school: "", date: "", bullets: [] }}
-        onAdd={item => addItem("education", item)}
-        onRemove={id => removeItem("education", id)}
-        renderItem={(item) => (
-          <>
-            <TextField label="Título / Curso" value={item.title} onChange={v => updItem("education", item.id, "title", v)} />
-            <div className="two-col">
-              <TextField label="Institución" value={item.school} onChange={v => updItem("education", item.id, "school", v)} />
-              <TextField label="Fecha" value={item.date} onChange={v => updItem("education", item.id, "date", v)} />
-            </div>
-            <BulletList bullets={item.bullets} onChange={b => updBullets("education", item.id, b)} />
-          </>
-        )}
-      />
-
-      <div className="field-group">
-        <div className="group-title">Habilidades</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 8 }}>
-          {data.skills.map((sk, i) => (
-            <span key={i} style={{ background: "#E6F1FB", color: "#0C447C", borderRadius: 100, padding: "3px 10px", fontSize: 11, display: "flex", alignItems: "center", gap: 5, border: "0.5px solid #B5D4F4" }}>
-              {sk}
-              <span onClick={() => upd("skills", data.skills.filter((_, j) => j !== i))} style={{ cursor: "pointer", color: "#888", fontSize: 13 }}>✕</span>
-            </span>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <input type="text" value={skillInput} onChange={e => setSkillInput(e.target.value)}
-            placeholder="Agregar habilidad y presionar Enter..."
-            style={{ marginBottom: 0 }}
-            onKeyDown={e => {
-              if (e.key === "Enter" && skillInput.trim()) {
-                upd("skills", [...data.skills, skillInput.trim()]);
-                setSkillInput("");
-              }
-            }} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CVPreview({ data }) {
-  const initials = data.name.trim().split(" ").slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
-  return (
-    <div id="cv-output">
-      <div className="cv-sidebar">
-        <div className="cv-avatar">{initials}</div>
-        <div className="cv-name">{data.name}</div>
-        <div className="cv-role">{data.role}</div>
-        <hr className="cv-divider" />
-        <div className="cv-s-block">
-          <div className="cv-s-label">Contacto</div>
-          {data.email && <div className="cv-s-item">{data.email}</div>}
-          {data.phone && <div className="cv-s-item">{data.phone}</div>}
-          {data.location && <div className="cv-s-item">{data.location}</div>}
-        </div>
-        {data.summary && (
-          <div className="cv-s-block">
-            <div className="cv-s-label">Perfil</div>
-            <div className="cv-s-summary">"{data.summary}"</div>
-          </div>
-        )}
-        {data.languages.length > 0 && (
-          <div className="cv-s-block">
-            <div className="cv-s-label">Idiomas</div>
-            {data.languages.map(l => (
-              <div className="cv-lang-row" key={l.id}>
-                <span className="cv-lang-name">{l.name}</span>
-                <span className="cv-lang-level">{l.level}</span>
+      function BulletList({ bullets, onChange }) {
+        const update = (i, v) => {
+          const b = [...bullets];
+          b[i] = v;
+          onChange(b);
+        };
+        const remove = (i) => onChange(bullets.filter((_, j) => j !== i));
+        const add = () => onChange([...bullets, ""]);
+        return (
+          <div>
+            <label>Puntos clave</label>
+            {bullets.map((b, i) => (
+              <div className="bullet-row" key={i}>
+                <input
+                  type="text"
+                  value={b}
+                  onChange={(e) => update(i, e.target.value)}
+                  placeholder="Describe un logro o responsabilidad..."
+                />
+                <button className="bullet-remove" onClick={() => remove(i)}>
+                  ✕
+                </button>
               </div>
             ))}
+            <button className="bullet-add" onClick={add}>
+              + agregar punto
+            </button>
           </div>
-        )}
-        {(data.birth || data.nationality) && (
-          <div className="cv-s-block">
-            <div className="cv-s-label">Datos</div>
-            {data.birth && <div className="cv-s-item">Nacimiento: {data.birth}</div>}
-            {data.nationality && <div className="cv-s-item">Nacionalidad: {data.nationality}</div>}
-          </div>
-        )}
-      </div>
+        );
+      }
 
-      <div className="cv-main">
-        {data.experience.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">Experiencia</div>
-            {data.experience.map(job => (
-              <div className="cv-job" key={job.id}>
-                <div className="cv-job-head">
-                  <div className="cv-job-title">{job.title}{job.company ? ` — ${job.company}` : ""}</div>
-                  {job.date && <span className="cv-job-date">{job.date}</span>}
+      function RepeatingSection({
+        title,
+        items,
+        onAdd,
+        onRemove,
+        renderItem,
+        emptyItem,
+      }) {
+        return (
+          <div className="field-group">
+            <div className="group-title">{title}</div>
+            {items.map((item, i) => (
+              <div className="repeating-item" key={item.id}>
+                <div className="item-header">
+                  <span className="item-label">
+                    {item.title || item.name || `Item ${i + 1}`}
+                  </span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => onRemove(item.id)}
+                  >
+                    ×
+                  </button>
                 </div>
-                {job.bullets.filter(Boolean).length > 0 && (
-                  <ul className="cv-bullets">
-                    {job.bullets.filter(Boolean).map((b, i) => <li key={i}>{b}</li>)}
-                  </ul>
+                {renderItem(item, i)}
+              </div>
+            ))}
+            <button
+              className="add-btn"
+              onClick={() => onAdd({ id: uid(), ...emptyItem })}
+            >
+              + Agregar {title.toLowerCase()}
+            </button>
+          </div>
+        );
+      }
+
+      function Editor({ data, setData }) {
+        const upd = (k, v) => setData((d) => ({ ...d, [k]: v }));
+        const updItem = (key, id, field, val) =>
+          setData((d) => ({
+            ...d,
+            [key]: d[key].map((it) =>
+              it.id === id ? { ...it, [field]: val } : it,
+            ),
+          }));
+        const addItem = (key, item) =>
+          setData((d) => ({ ...d, [key]: [...d[key], item] }));
+        const removeItem = (key, id) =>
+          setData((d) => ({
+            ...d,
+            [key]: d[key].filter((it) => it.id !== id),
+          }));
+        const updBullets = (key, id, bullets) =>
+          setData((d) => ({
+            ...d,
+            [key]: d[key].map((it) => (it.id === id ? { ...it, bullets } : it)),
+          }));
+
+        const [skillInput, setSkillInput] = useState("");
+
+        return (
+          <div className="editor-body">
+            <div className="field-group">
+              <div className="group-title">Datos Personales</div>
+              <TextField
+                label="Nombre completo"
+                value={data.name}
+                onChange={(v) => upd("name", v)}
+              />
+              <TextField
+                label="Rol / Título profesional"
+                value={data.role}
+                onChange={(v) => upd("role", v)}
+              />
+              <div className="two-col">
+                <TextField
+                  label="Email"
+                  value={data.email}
+                  onChange={(v) => upd("email", v)}
+                />
+                <TextField
+                  label="Teléfono"
+                  value={data.phone}
+                  onChange={(v) => upd("phone", v)}
+                />
+              </div>
+              <div className="two-col">
+                <TextField
+                  label="Ubicación"
+                  value={data.location}
+                  onChange={(v) => upd("location", v)}
+                />
+                <TextField
+                  label="Nacionalidad"
+                  value={data.nationality}
+                  onChange={(v) => upd("nationality", v)}
+                />
+              </div>
+              <TextField
+                label="Fecha de nacimiento"
+                value={data.birth}
+                onChange={(v) => upd("birth", v)}
+              />
+              <TextField
+                label="Perfil / Resumen"
+                value={data.summary}
+                onChange={(v) => upd("summary", v)}
+                multiline
+              />
+            </div>
+
+            <div className="field-group">
+              <div className="group-title">Idiomas</div>
+              {data.languages.map((l) => (
+                <div className="repeating-item" key={l.id}>
+                  <div className="item-header">
+                    <span className="item-label">{l.name || "Idioma"}</span>
+                    <button
+                      className="remove-btn"
+                      onClick={() => removeItem("languages", l.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="two-col">
+                    <input
+                      type="text"
+                      placeholder="Idioma"
+                      value={l.name}
+                      onChange={(e) =>
+                        updItem("languages", l.id, "name", e.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="Nivel"
+                      value={l.level}
+                      onChange={(e) =>
+                        updItem("languages", l.id, "level", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+              <button
+                className="add-btn"
+                onClick={() =>
+                  addItem("languages", { id: uid(), name: "", level: "" })
+                }
+              >
+                + Agregar idioma
+              </button>
+            </div>
+
+            <RepeatingSection
+              title="Experiencia"
+              items={data.experience}
+              emptyItem={{ title: "", company: "", date: "", bullets: [""] }}
+              onAdd={(item) => addItem("experience", item)}
+              onRemove={(id) => removeItem("experience", id)}
+              renderItem={(item) => (
+                <>
+                  <TextField
+                    label="Cargo"
+                    value={item.title}
+                    onChange={(v) => updItem("experience", item.id, "title", v)}
+                  />
+                  <div className="two-col">
+                    <TextField
+                      label="Empresa"
+                      value={item.company}
+                      onChange={(v) =>
+                        updItem("experience", item.id, "company", v)
+                      }
+                    />
+                    <TextField
+                      label="Período"
+                      value={item.date}
+                      onChange={(v) =>
+                        updItem("experience", item.id, "date", v)
+                      }
+                    />
+                  </div>
+                  <BulletList
+                    bullets={item.bullets}
+                    onChange={(b) => updBullets("experience", item.id, b)}
+                  />
+                </>
+              )}
+            />
+
+            <RepeatingSection
+              title="Educación"
+              items={data.education}
+              emptyItem={{ title: "", school: "", date: "", bullets: [] }}
+              onAdd={(item) => addItem("education", item)}
+              onRemove={(id) => removeItem("education", id)}
+              renderItem={(item) => (
+                <>
+                  <TextField
+                    label="Título / Curso"
+                    value={item.title}
+                    onChange={(v) => updItem("education", item.id, "title", v)}
+                  />
+                  <div className="two-col">
+                    <TextField
+                      label="Institución"
+                      value={item.school}
+                      onChange={(v) =>
+                        updItem("education", item.id, "school", v)
+                      }
+                    />
+                    <TextField
+                      label="Fecha"
+                      value={item.date}
+                      onChange={(v) => updItem("education", item.id, "date", v)}
+                    />
+                  </div>
+                  <BulletList
+                    bullets={item.bullets}
+                    onChange={(b) => updBullets("education", item.id, b)}
+                  />
+                </>
+              )}
+            />
+
+            <div className="field-group">
+              <div className="group-title">Habilidades</div>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 5,
+                  marginBottom: 8,
+                }}
+              >
+                {data.skills.map((sk, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      background: "#E6F1FB",
+                      color: "#0C447C",
+                      borderRadius: 100,
+                      padding: "3px 10px",
+                      fontSize: 11,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      border: "0.5px solid #B5D4F4",
+                    }}
+                  >
+                    {sk}
+                    <span
+                      onClick={() =>
+                        upd(
+                          "skills",
+                          data.skills.filter((_, j) => j !== i),
+                        )
+                      }
+                      style={{ cursor: "pointer", color: "#888", fontSize: 13 }}
+                    >
+                      ✕
+                    </span>
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <input
+                  type="text"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  placeholder="Agregar habilidad y presionar Enter..."
+                  style={{ marginBottom: 0 }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && skillInput.trim()) {
+                      upd("skills", [...data.skills, skillInput.trim()]);
+                      setSkillInput("");
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      function CVPreview({ data }) {
+        const initials = data.name
+          .trim()
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0] || "")
+          .join("")
+          .toUpperCase();
+        return (
+          <div id="cv-output">
+            <div className="cv-sidebar">
+              <div className="cv-avatar">{initials}</div>
+              <div className="cv-name">{data.name}</div>
+              <div className="cv-role">{data.role}</div>
+              <hr className="cv-divider" />
+              <div className="cv-s-block">
+                <div className="cv-s-label">Contacto</div>
+                {data.email && <div className="cv-s-item">{data.email}</div>}
+                {data.phone && <div className="cv-s-item">{data.phone}</div>}
+                {data.location && (
+                  <div className="cv-s-item">{data.location}</div>
                 )}
               </div>
-            ))}
-          </div>
-        )}
-
-        {data.education.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">Educación</div>
-            {data.education.map(ed => (
-              <div className="cv-job" key={ed.id}>
-                <div className="cv-job-head">
-                  <div className="cv-job-title">{ed.title}</div>
-                  {ed.date && <span className="cv-job-date">{ed.date}</span>}
+              {data.summary && (
+                <div className="cv-s-block">
+                  <div className="cv-s-label">Perfil</div>
+                  <div className="cv-s-summary">"{data.summary}"</div>
                 </div>
-                {ed.school && <div className="cv-job-co">{ed.school}</div>}
-                {ed.bullets.filter(Boolean).length > 0 && (
-                  <ul className="cv-bullets">
-                    {ed.bullets.filter(Boolean).map((b, i) => <li key={i}>{b}</li>)}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+              )}
+              {data.languages.length > 0 && (
+                <div className="cv-s-block">
+                  <div className="cv-s-label">Idiomas</div>
+                  {data.languages.map((l) => (
+                    <div className="cv-lang-row" key={l.id}>
+                      <span className="cv-lang-name">{l.name}</span>
+                      <span className="cv-lang-level">{l.level}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(data.birth || data.nationality) && (
+                <div className="cv-s-block">
+                  <div className="cv-s-label">Datos</div>
+                  {data.birth && (
+                    <div className="cv-s-item">Nacimiento: {data.birth}</div>
+                  )}
+                  {data.nationality && (
+                    <div className="cv-s-item">
+                      Nacionalidad: {data.nationality}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
-        {data.skills.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">Habilidades Técnicas</div>
-            <div className="cv-skills">
-              {data.skills.map((sk, i) => <span className="cv-skill" key={i}>{sk}</span>)}
+            <div className="cv-main">
+              {data.experience.length > 0 && (
+                <div className="cv-section">
+                  <div className="cv-m-label">Experiencia</div>
+                  {data.experience.map((job) => (
+                    <div className="cv-job" key={job.id}>
+                      <div className="cv-job-head">
+                        <div className="cv-job-title">
+                          {job.title}
+                          {job.company ? ` — ${job.company}` : ""}
+                        </div>
+                        {job.date && (
+                          <span className="cv-job-date">{job.date}</span>
+                        )}
+                      </div>
+                      {job.bullets.filter(Boolean).length > 0 && (
+                        <ul className="cv-bullets">
+                          {job.bullets.filter(Boolean).map((b, i) => (
+                            <li key={i}>{b}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {data.education.length > 0 && (
+                <div className="cv-section">
+                  <div className="cv-m-label">Educación</div>
+                  {data.education.map((ed) => (
+                    <div className="cv-job" key={ed.id}>
+                      <div className="cv-job-head">
+                        <div className="cv-job-title">{ed.title}</div>
+                        {ed.date && (
+                          <span className="cv-job-date">{ed.date}</span>
+                        )}
+                      </div>
+                      {ed.school && (
+                        <div className="cv-job-co">{ed.school}</div>
+                      )}
+                      {ed.bullets.filter(Boolean).length > 0 && (
+                        <ul className="cv-bullets">
+                          {ed.bullets.filter(Boolean).map((b, i) => (
+                            <li key={i}>{b}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {data.skills.length > 0 && (
+                <div className="cv-section">
+                  <div className="cv-m-label">Habilidades Técnicas</div>
+                  <div className="cv-skills">
+                    {data.skills.map((sk, i) => (
+                      <span className="cv-skill" key={i}>
+                        {sk}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  );
-}
+        );
+      }
 
-function App() {
-  const [data, setData] = useState(defaultData);
-  const [loading, setLoading] = useState(false);
+      function App() {
+        const [data, setData] = useState(defaultData);
+        const [loading, setLoading] = useState(false);
 
-  const exportPDF = () => {
-    setLoading(true);
-    const el = document.getElementById("cv-output");
-    const filename = (data.name || "cv").toLowerCase().replace(/\s+/g, "_") + "_cv.pdf";
-    const opt = {
-      margin: 0,
-      filename,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-      jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
-    };
-    html2pdf().set(opt).from(el).save().then(() => setLoading(false));
-  };
+        const exportPDF = () => {
+          setLoading(true);
+          const el = document.getElementById("cv-output");
+          const filename =
+            (data.name || "cv").toLowerCase().replace(/\s+/g, "_") + "_cv.pdf";
+          const opt = {
+            margin: 0,
+            filename,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
+          };
+          html2pdf()
+            .set(opt)
+            .from(el)
+            .save()
+            .then(() => setLoading(false));
+        };
 
-  return (
-    <div className="app">
-      <div className="editor-panel">
-        <div className="editor-header">
-          <h1>CV Maker</h1>
-          <span>Editor</span>
-        </div>
-        <Editor data={data} setData={setData} />
-        <div className="editor-footer">
-          <button className="download-btn" onClick={exportPDF} disabled={loading}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            {loading ? "Generando PDF..." : "Descargar PDF"}
-          </button>
-        </div>
-      </div>
+        return (
+          <div className="app">
+            <div className="editor-panel">
+              <div className="editor-header">
+                <h1>CV Maker</h1>
+                <span>Editor</span>
+              </div>
+              <Editor data={data} setData={setData} />
+              <div className="editor-footer">
+                <button
+                  className="download-btn"
+                  onClick={exportPDF}
+                  disabled={loading}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  {loading ? "Generando PDF..." : "Descargar PDF"}
+                </button>
+              </div>
+            </div>
 
-      <div className="preview-panel">
-        <div className="preview-label">Vista previa · A4</div>
-        <CVPreview data={data} />
-      </div>
-    </div>
-  );
-}
+            <div className="preview-panel">
+              <div className="preview-label">Vista previa · A4</div>
+              <CVPreview data={data} />
+            </div>
+          </div>
+        );
+      }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-</script>
-</body>
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
 </html>
