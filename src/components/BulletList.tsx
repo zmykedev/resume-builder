@@ -1,7 +1,12 @@
-export default function BulletList({ bullets, onChange }) {
-  const update = (i, v) => { const b = [...bullets]; b[i] = v; onChange(b); };
-  const remove = (i) => onChange(bullets.filter((_, j) => j !== i));
-  const add = () => onChange([...bullets, ""]);
+interface BulletListProps {
+  bullets: string[];
+  onChange: (bullets: string[]) => void;
+}
+
+export default function BulletList({ bullets, onChange }: BulletListProps) {
+  const update = (i: number, v: string) => { const b = [...bullets]; b[i] = v; onChange(b); };
+  const remove = (i: number) => onChange(bullets.filter((_, j) => j !== i));
+  const add = () => onChange([...bullets, '']);
   return (
     <div>
       <label>Puntos clave</label>

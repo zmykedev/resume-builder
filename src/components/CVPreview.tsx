@@ -1,24 +1,29 @@
 import ATSPreview from './ATSPreview';
+import type { CVData, ThemeColorsMap, ThemeName } from '../types';
 
-export default function CVPreview({ data, themeColors, previewTheme, atsMode }) {
-  const initials = data.name.trim().split(" ").slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
-  const t = themeColors[previewTheme || data.theme] || themeColors.blue;
-  if (atsMode) {
-    return <ATSPreview data={data} />;
-  }
+interface CVPreviewProps {
+  data: CVData;
+  themeColors: ThemeColorsMap;
+  previewTheme: string | null;
+  atsMode: boolean;
+}
+
+export default function CVPreview({ data, themeColors, previewTheme, atsMode }: CVPreviewProps) {
+  const t = themeColors[(previewTheme || data.theme) as ThemeName] ?? themeColors.blue;
+  if (atsMode) return <ATSPreview data={data} />;
 
   const cvStyle = {
-    "--blue-dark": t.dark,
-    "--blue-mid": t.mid,
-    "--blue-acc": t.acc,
-    "--blue-light": t.light,
-    "--blue-text": t.text,
-    "--blue-muted": t.muted,
-  };
+    '--blue-dark': t.dark,
+    '--blue-mid': t.mid,
+    '--blue-acc': t.acc,
+    '--blue-light': t.light,
+    '--blue-text': t.text,
+    '--blue-muted': t.muted,
+  } as React.CSSProperties;
+
   return (
     <div id="cv-output" style={cvStyle}>
       <div className="cv-sidebar">
-        <div className="cv-avatar">{initials}</div>
         <div className="cv-name">{data.name}</div>
         <div className="cv-role">{data.role}</div>
         <hr className="cv-divider" />
@@ -28,11 +33,10 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }) 
           {data.phone && <div className="cv-s-item">{data.phone}</div>}
           {data.location && <div className="cv-s-item">{data.location}</div>}
         </div>
-        {(data.professionalSummary || data.personalMotto) && (
+        {data.professionalSummary && (
           <div className="cv-s-block">
             <div className="cv-s-label">Perfil</div>
-            {data.professionalSummary && <div className="cv-s-summary">{data.professionalSummary}</div>}
-            {data.personalMotto && <div className="cv-s-motto" style={{marginTop: 8, fontStyle: 'italic'}}>"{data.personalMotto}"</div>}
+            <div className="cv-s-summary">{data.professionalSummary}</div>
           </div>
         )}
         {data.languages.length > 0 && (
@@ -62,7 +66,7 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }) 
             {data.experience.map(job => (
               <div className="cv-job" key={job.id}>
                 <div className="cv-job-head">
-                  <div className="cv-job-title">{job.title}{job.company ? ` — ${job.company}` : ""}</div>
+                  <div className="cv-job-title">{job.title}{job.company ? ` — ${job.company}` : ''}</div>
                   {job.date && <span className="cv-job-date">{job.date}</span>}
                 </div>
                 {job.bullets.filter(Boolean).length > 0 && (
