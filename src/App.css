@@ -153,7 +153,12 @@ textarea {
   color: #c00;
   font-size: 16px;
   line-height: 1;
-  padding: 0 4px;
+  padding: 4px 8px;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0.6;
   transition: opacity 0.15s;
 }
@@ -196,6 +201,12 @@ textarea {
   color: #aaa;
   font-size: 14px;
   flex-shrink: 0;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 }
 .bullet-remove:hover {
   color: #c00;
@@ -280,9 +291,9 @@ textarea {
 }
 .download-hint {
   font-size: 10px;
-  opacity: 0.7;
   font-weight: 400;
   white-space: nowrap;
+  /* opacity removed — #c62828 on #fce4ec = 4.75:1 ✓, #0d47a1 on #e3f2fd = 7.7:1 ✓ */
 }
 
 /* Download spinner */
@@ -314,7 +325,7 @@ textarea {
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.85); /* was 0.65 — fails 4.5:1 on dark bg */
   margin-bottom: 0;
   text-align: center;
 }
@@ -363,7 +374,7 @@ textarea {
 }
 .header-badge {
   font-size: 11px;
-  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.85); /* was opacity:0.7 — affects whole element; explicit color is safer */
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -373,17 +384,17 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
+  width: 36px;
+  height: 36px;
+  background: #1a5a9e;
+  border: 1px solid #2a6aae;
   border-radius: 50%;
   cursor: pointer;
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   transition: background 0.15s;
   flex-shrink: 0;
 }
-.tour-btn:hover { background: rgba(255,255,255,0.25); }
+.tour-btn:hover { background: #2268b5; }
 .tour-btn svg { width: 16px; height: 16px; }
 
 /* TEMPLATE PICKER */
@@ -392,17 +403,17 @@ textarea {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: #1a5a9e;
+  border: 1px solid #2a6aae;
   border-radius: 5px;
   padding: 4px 8px;
   cursor: pointer;
   transition: background 0.15s;
-  color: rgba(255,255,255,0.9);
+  color: #ffffff;
   font-family: 'DM Sans', sans-serif;
   font-size: 12px;
 }
-.template-btn:hover { background: rgba(255,255,255,0.22); }
+.template-btn:hover { background: #2268b5; }
 .template-btn-label { font-weight: 500; }
 .template-dropdown {
   position: absolute;
@@ -474,8 +485,8 @@ textarea {
   }
 }
 .color-opt {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 4px;
   border: 1.5px solid transparent;
   cursor: pointer;
@@ -694,8 +705,8 @@ textarea {
   gap: 4px;
 }
 .zoom-btn {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -708,8 +719,8 @@ textarea {
   padding: 0;
 }
 .zoom-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 .zoom-btn:hover:not(:disabled) {
   background: #2268b5;
@@ -742,14 +753,15 @@ textarea {
   gap: 2px;
 }
 .ats-toggle-btn {
-  padding: 4px 14px;
+  padding: 6px 14px;
+  min-height: 32px;
   border: none;
   border-radius: 4px;
   font-family: "DM Sans", sans-serif;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.85); /* was 0.65 — ~3.6:1 on dark bg, fails; 0.85 = ~6.4:1 */
   background: transparent;
   transition: all 0.15s;
 }
@@ -1001,7 +1013,7 @@ textarea {
   border: 1px solid #ffe0b2;
   border-radius: 6px;
   font-size: 11px;
-  color: #e65100;
+  color: #a04000; /* #e65100 was 3.4:1 on #fff3e0 — fails; #a04000 = 5.9:1 */
 }
 
 /* ─────────────────────────────────────────────────────────

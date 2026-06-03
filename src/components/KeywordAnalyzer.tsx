@@ -38,8 +38,9 @@ export default function KeywordAnalyzer({ data }: Readonly<KeywordAnalyzerProps>
   return (
     <div className="field-group">
       <div className="group-title">{t.jobAnalysis}</div>
-      <label>{t.jobDescriptionLabel}</label>
+      <label htmlFor="jd-textarea">{t.jobDescriptionLabel}</label>
       <textarea
+        id="jd-textarea"
         className="jd-textarea"
         rows={6}
         placeholder={t.jobDescriptionPlaceholder}

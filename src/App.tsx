@@ -7,21 +7,19 @@ import {
   PlusIcon,
   QuestionIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import CVPreview from "./components/CVPreview";
 import Editor from "./components/Editor";
-import GuidedTour from "./components/GuidedTour";
-import { LangProvider } from "./contexts/LangContext";
-import { useLang } from "./contexts/LangContext";
+import { LangProvider, useLang } from "./contexts/LangContext";
 import { detectLang } from "./i18n/translations";
 import { sampleData, sampleDataEn } from "./data/sampleData";
 import { themeColors } from "./data/themeColors";
 import type { CVData, ThemeName } from "./types";
-import { exportDocx } from "./utils/exportDocx";
-import { exportPdf } from "./utils/exportPdf";
+
+// Loaded only when the user actually opens the tour
+const GuidedTour = lazy(() => import('./components/GuidedTour'));
 
 const TOUR_KEY = "cv-maker-tour-seen";
-
 const initialData = detectLang() === 'en' ? sampleDataEn : sampleData;
 
 function AppInner() {
@@ -48,9 +46,12 @@ function AppInner() {
     localStorage.setItem(TOUR_KEY, "1");
   };
 
+  // Dynamic imports: html2pdf.js (~180 KB) and docx (~90 KB) are only fetched
+  // when the user actually clicks export — not on initial page load.
   const handlePdf = async () => {
     setLoadingPdf(true);
     try {
+      const { exportPdf } = await import('./utils/exportPdf');
       await exportPdf(data.name);
     } finally {
       setLoadingPdf(false);
@@ -60,6 +61,7 @@ function AppInner() {
   const handleDocx = async () => {
     setLoadingDocx(true);
     try {
+      const { exportDocx } = await import('./utils/exportDocx');
       await exportDocx(data);
     } finally {
       setLoadingDocx(false);
@@ -68,8 +70,12 @@ function AppInner() {
 
   return (
     <>
-      <GuidedTour run={runTour} onFinish={handleTourFinish} />
-      <div className="app">
+      {runTour && (
+        <Suspense fallback={null}>
+          <GuidedTour run={runTour} onFinish={handleTourFinish} />
+        </Suspense>
+      )}
+      <main className="app">
         <div className="editor-panel">
           <div className="editor-header">
             <h1>{t.appTitle}</h1>
@@ -125,7 +131,8 @@ function AppInner() {
                 <button
                   className="color-btn"
                   onClick={() => setShowColors((o) => !o)}
-                  title={t.themeColor}
+                  aria-label={t.themeColor}
+                  aria-expanded={showColors}
                 >
                   <PaintBucketIcon className="color-btn-icon" weight="fill" />
                   <span
@@ -144,15 +151,17 @@ function AppInner() {
                       onClick={() => setShowColors(false)}
                       aria-label={t.closeColorPicker}
                     />
-                    <div className="color-dropdown">
+                    <div className="color-dropdown" role="listbox" aria-label={t.themeColor}>
                       {Object.entries(themeColors).map(([name, colors]) => (
                         <button
                           key={name}
+                          role="option"
+                          aria-selected={data.theme === name}
                           className={
                             data.theme === name ? "color-opt active" : "color-opt"
                           }
                           style={{ background: colors.dark }}
-                          title={name}
+                          aria-label={name}
                           onMouseEnter={() => setHoverTheme(name)}
                           onMouseLeave={() => setHoverTheme(null)}
                           onClick={() => {
@@ -173,41 +182,43 @@ function AppInner() {
               <button
                 className="tour-btn"
                 onClick={() => setRunTour(true)}
-                title={t.guidedTour}
+                aria-label={t.guidedTour}
               >
                 <QuestionIcon weight="fill" />
               </button>
 
-              <div className="ats-toggle">
+              <div className="ats-toggle" role="group" aria-label="View mode">
                 <button
                   className={atsMode ? "ats-toggle-btn" : "ats-toggle-btn active"}
                   onClick={() => setAtsMode(false)}
+                  aria-pressed={!atsMode}
                 >
                   {t.customized}
                 </button>
                 <button
                   className={atsMode ? "ats-toggle-btn active" : "ats-toggle-btn"}
                   onClick={() => setAtsMode(true)}
+                  aria-pressed={atsMode}
                 >
                   {t.recommended}
                 </button>
               </div>
 
-              <div className="zoom-controls">
+              <div className="zoom-controls" role="group" aria-label="Zoom">
                 <button
                   className="zoom-btn"
                   onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
                   disabled={zoom <= 0.5}
-                  title={t.zoomOut}
+                  aria-label={t.zoomOut}
                 >
                   <MinusIcon weight="bold" />
                 </button>
-                <span className="zoom-label">{Math.round(zoom * 100)}%</span>
+                <span className="zoom-label" aria-live="polite">{Math.round(zoom * 100)}%</span>
                 <button
                   className="zoom-btn"
                   onClick={() => setZoom((z) => Math.min(2, z + 0.1))}
                   disabled={zoom >= 2}
-                  title={t.zoomIn}
+                  aria-label={t.zoomIn}
                 >
                   <PlusIcon weight="bold" />
                 </button>
@@ -230,7 +241,7 @@ function AppInner() {
             />
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

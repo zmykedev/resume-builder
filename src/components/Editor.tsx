@@ -75,9 +75,9 @@ export default function Editor({ data, setData }: EditorProps) {
               <button className="remove-btn" onClick={() => removeItem('languages', l.id)}>×</button>
             </div>
             <div className="two-col">
-              <input type="text" placeholder={t.language} value={l.name}
+              <input type="text" placeholder={t.language} aria-label={t.language} value={l.name}
                 onChange={e => updItem<LanguageItem>('languages', l.id, 'name', e.target.value)} />
-              <input type="text" placeholder={t.level} value={l.level}
+              <input type="text" placeholder={t.level} aria-label={t.level} value={l.level}
                 onChange={e => updItem<LanguageItem>('languages', l.id, 'level', e.target.value)} />
             </div>
           </div>
@@ -149,6 +149,7 @@ export default function Editor({ data, setData }: EditorProps) {
             value={skillInput}
             onChange={e => setSkillInput(e.target.value)}
             placeholder={t.addSkillPlaceholder}
+            aria-label={t.addSkillPlaceholder}
             style={{ marginBottom: 0 }}
             onKeyDown={e => {
               if (e.key === 'Enter' && skillInput.trim()) {

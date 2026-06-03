@@ -8,11 +8,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Only stable, always-needed libs get named chunks for long-lived caching.
+          // Heavy export libs (html2pdf, docx) are now dynamic imports — Vite
+          // auto-splits them into separate async chunks loaded on demand.
           'vendor-react': ['react', 'react-dom'],
-          'vendor-pdf': ['html2pdf.js'],
-          'vendor-docx': ['docx', 'file-saver'],
           'vendor-icons': ['@phosphor-icons/react'],
-          'vendor-tour': ['react-joyride'],
         },
       },
     },
