@@ -27,13 +27,14 @@ function buildDesktopSteps(t: Translations): Step[] {
 function buildMobileSteps(t: Translations): Step[] {
   return [
     // ── Editor tab (indices 0–8) ──────────────────────────────────────────────
-    // placement:'bottom' for all — no two-column layout on mobile
-    { target: '.editor-header h1', title: t.tour.step1Title,  content: t.tour.step1Content,  skipBeacon: true, placement: 'bottom' },
-    { target: '#tour-personal',    title: t.tour.step3Title,  content: t.tour.step3Content,  placement: 'bottom' },
-    { target: '#tour-idiomas',     title: t.tour.step4Title,  content: t.tour.step4Content,  placement: 'bottom' },
-    { target: '#tour-experiencia', title: t.tour.step5Title,  content: t.tour.step5Content,  placement: 'bottom' },
-    { target: '#tour-educacion',   title: t.tour.step6Title,  content: t.tour.step6Content,  placement: 'bottom' },
-    { target: '#tour-habilidades', title: t.tour.step7Title,  content: t.tour.step7Content,  placement: 'bottom' },
+    // Target .group-title (small heading row) instead of the full section div
+    // so Joyride has room below to place the tooltip without flipping to top.
+    { target: '.editor-header h1',                  title: t.tour.step1Title,  content: t.tour.step1Content,  skipBeacon: true, placement: 'bottom' },
+    { target: '#tour-personal .group-title',         title: t.tour.step3Title,  content: t.tour.step3Content,  placement: 'bottom' },
+    { target: '#tour-idiomas .group-title',          title: t.tour.step4Title,  content: t.tour.step4Content,  placement: 'bottom' },
+    { target: '#tour-experiencia .group-title',      title: t.tour.step5Title,  content: t.tour.step5Content,  placement: 'bottom' },
+    { target: '#tour-educacion .group-title',        title: t.tour.step6Title,  content: t.tour.step6Content,  placement: 'bottom' },
+    { target: '#tour-habilidades .group-title',      title: t.tour.step7Title,  content: t.tour.step7Content,  placement: 'bottom' },
     { target: '.analyze-btn',      title: t.tour.step8Title,  content: t.tour.step8Content,  placement: 'top' },
     { target: '.download-btn--pdf',  title: t.tour.step11Title, content: t.tour.step11Content, placement: 'top', skipScroll: true },
     { target: '.download-btn--docx', title: t.tour.step12Title, content: t.tour.step12Content, placement: 'top', skipScroll: true },

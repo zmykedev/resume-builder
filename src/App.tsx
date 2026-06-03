@@ -255,6 +255,32 @@ function AppInner() {
               atsMode={atsMode}
             />
           </div>
+
+          {/* Download buttons pinned to bottom of preview panel on mobile */}
+          <div className="mobile-preview-footer">
+            <button
+              className="download-btn download-btn--pdf"
+              onClick={handlePdf}
+              disabled={loadingPdf}
+            >
+              {loadingPdf ? <span className="download-spinner" /> : <FilePdfIcon weight="duotone" />}
+              <span className="download-text">
+                <span className="download-label">{loadingPdf ? t.generating : t.exportPdf}</span>
+                <span className="download-hint">{t.resumePdf}</span>
+              </span>
+            </button>
+            <button
+              className="download-btn download-btn--docx"
+              onClick={handleDocx}
+              disabled={loadingDocx}
+            >
+              {loadingDocx ? <span className="download-spinner" /> : <FileDocIcon weight="duotone" />}
+              <span className="download-text">
+                <span className="download-label">{loadingDocx ? t.generating : t.exportDocx}</span>
+                <span className="download-hint">{t.resumeDocx}</span>
+              </span>
+            </button>
+          </div>
         </div>
 
         <nav className="mobile-tabbar" aria-label="Navigation">

@@ -1017,9 +1017,10 @@ textarea {
 }
 
 /* ─────────────────────────────────────────────────────────
-   MOBILE TAB BAR (hidden on desktop)
+   MOBILE-ONLY ELEMENTS (hidden on desktop)
 ───────────────────────────────────────────────────────── */
 .mobile-tabbar { display: none; }
+.mobile-preview-footer { display: none; }
 
 /* ─────────────────────────────────────────────────────────
    RESPONSIVE
@@ -1040,7 +1041,10 @@ textarea {
 
   .preview-panel {
     padding: 0;
-    min-height: calc(100dvh - 60px);
+    height: calc(100dvh - 60px);
+    /* clip horizontal overflow from the 794px layout box without
+       breaking position:sticky on the download footer */
+    overflow-x: clip;
   }
 
   /* Preview header goes edge-to-edge on mobile */
@@ -1091,6 +1095,20 @@ textarea {
 
   /* No tour on mobile */
   .tour-btn { display: none; }
+
+  /* ── Download footer — sticky at bottom of preview panel ── */
+  .mobile-preview-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0.75rem 1rem;
+    background: #fafafa;
+    border-top: 1px solid #e0e5ec;
+    position: sticky;
+    bottom: 0;
+    align-self: stretch;
+    z-index: 10;
+  }
 
   /* ── Mobile tab bar ── */
   .mobile-tabbar {
