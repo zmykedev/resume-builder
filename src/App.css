@@ -198,7 +198,7 @@ textarea {
   background: none;
   border: none;
   cursor: pointer;
-  color: #aaa;
+  color: #666; /* #aaa was 2.2:1 on near-white bg — fails; #666 = 5.7:1 */
   font-size: 14px;
   flex-shrink: 0;
   min-width: 28px;
@@ -644,7 +644,7 @@ textarea {
 }
 .cv-job-co {
   font-size: 10px;
-  color: #777;
+  color: #666; /* #777 = 4.47:1 on white, just below 4.5:1 threshold; #666 = 5.7:1 */
   margin-bottom: 4px;
 }
 .cv-bullets {

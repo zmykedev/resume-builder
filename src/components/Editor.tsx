@@ -139,7 +139,7 @@ export default function Editor({ data, setData }: EditorProps) {
             <span key={i} style={{ background: '#E6F1FB', color: '#0C447C', borderRadius: 100, padding: '3px 10px', fontSize: 11, display: 'flex', alignItems: 'center', gap: 5, border: '0.5px solid #B5D4F4' }}>
               {sk}
               <span onClick={() => upd('skills', data.skills.filter((_, j) => j !== i))}
-                style={{ cursor: 'pointer', color: '#888', fontSize: 13 }}>✕</span>
+                style={{ cursor: 'pointer', color: '#555', fontSize: 13 }}>✕</span>
             </span>
           ))}
         </div>

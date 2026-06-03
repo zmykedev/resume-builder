@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 interface TextFieldProps {
   label?: string;
   value: string;
@@ -6,13 +8,14 @@ interface TextFieldProps {
   placeholder?: string;
 }
 
-export default function TextField({ label, value, onChange, multiline, placeholder }: TextFieldProps) {
+export default function TextField({ label, value, onChange, multiline, placeholder }: Readonly<TextFieldProps>) {
+  const id = useId();
   return (
     <div>
-      {label && <label>{label}</label>}
+      {label && <label htmlFor={id}>{label}</label>}
       {multiline
-        ? <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
-        : <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />}
+        ? <textarea id={id} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />
+        : <input id={id} type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} />}
     </div>
   );
 }

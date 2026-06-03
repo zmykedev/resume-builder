@@ -1,17 +1,30 @@
 export type Lang = 'es' | 'en';
 
-const SPANISH_TZ_PATTERN =
-  /^America\/(Santiago|Punta_Arenas|Argentina|Bogota|Lima|Caracas|La_Paz|Asuncion|Montevideo|Havana|Santo_Domingo|Panama|Costa_Rica|El_Salvador|Guatemala|Tegucigalpa|Managua|Mexico_City|Cancun|Merida|Mazatlan|Chihuahua|Ojinaga|Hermosillo|Tijuana|Bahia_Banderas|Guayaquil)|^Europe\/Madrid|^Atlantic\/Canary|^Pacific\/Easter/;
+const SPANISH_TZ_CITIES = new Set([
+  'America/Santiago','America/Punta_Arenas','America/Bogota','America/Lima',
+  'America/Caracas','America/La_Paz','America/Asuncion','America/Montevideo',
+  'America/Havana','America/Santo_Domingo','America/Panama','America/Costa_Rica',
+  'America/El_Salvador','America/Guatemala','America/Tegucigalpa','America/Managua',
+  'America/Mexico_City','America/Cancun','America/Merida','America/Mazatlan',
+  'America/Chihuahua','America/Ojinaga','America/Hermosillo','America/Tijuana',
+  'America/Bahia_Banderas','America/Guayaquil','Europe/Madrid',
+  'Atlantic/Canary','Pacific/Easter',
+]);
 
 const SPANISH_REGIONS = new Set([
   'AR','BO','CL','CO','CR','CU','DO','EC','SV','GQ',
   'GT','HN','MX','NI','PA','PY','PE','PR','ES','UY','VE',
 ]);
 
+function isSpanishTz(tz: string): boolean {
+  if (SPANISH_TZ_CITIES.has(tz)) return true;
+  return tz.startsWith('America/Argentina/');
+}
+
 export function detectLang(): Lang {
   // 1. Timezone — most reliable geographic signal, unaffected by browser language setting
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  if (SPANISH_TZ_PATTERN.test(tz)) return 'es';
+  if (isSpanishTz(tz)) return 'es';
 
   // 2. Region code in locale (e.g. "en-CL" → CL → Spanish)
   const locale = navigator.language || '';
@@ -65,6 +78,10 @@ export const translations = {
     skills: 'Habilidades',
     addSkillPlaceholder: 'Agregar habilidad y presionar Enter...',
     addItem: '+ Agregar',
+    keyPoints: 'Punto clave',
+    bulletPlaceholder: 'Describe un logro o responsabilidad...',
+    removeBullet: 'Eliminar punto',
+    addBullet: '+ agregar punto',
     jobAnalysis: 'Análisis de Puesto',
     jobDescriptionLabel: 'Descripción del puesto (JD)',
     jobDescriptionPlaceholder: 'Pega aquí la descripción del puesto para analizar la coincidencia con tu CV...',
@@ -155,6 +172,10 @@ export const translations = {
     skills: 'Skills',
     addSkillPlaceholder: 'Add a skill and press Enter...',
     addItem: '+ Add',
+    keyPoints: 'Key point',
+    bulletPlaceholder: 'Describe an achievement or responsibility...',
+    removeBullet: 'Remove bullet',
+    addBullet: '+ add bullet',
     jobAnalysis: 'Job Analysis',
     jobDescriptionLabel: 'Job Description (JD)',
     jobDescriptionPlaceholder: 'Paste the job description here to analyze how well your resume matches...',
