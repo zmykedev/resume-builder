@@ -1,4 +1,5 @@
 import ATSPreview from './ATSPreview';
+import { useLang } from '../contexts/LangContext';
 import type { CVData, ThemeColorsMap, ThemeName } from '../types';
 
 interface CVPreviewProps {
@@ -8,17 +9,18 @@ interface CVPreviewProps {
   atsMode: boolean;
 }
 
-export default function CVPreview({ data, themeColors, previewTheme, atsMode }: CVPreviewProps) {
-  const t = themeColors[(previewTheme || data.theme) as ThemeName] ?? themeColors.blue;
+export default function CVPreview({ data, themeColors, previewTheme, atsMode }: Readonly<CVPreviewProps>) {
+  const { t } = useLang();
+  const theme = themeColors[(previewTheme || data.theme) as ThemeName] ?? themeColors.blue;
   if (atsMode) return <ATSPreview data={data} />;
 
   const cvStyle = {
-    '--blue-dark': t.dark,
-    '--blue-mid': t.mid,
-    '--blue-acc': t.acc,
-    '--blue-light': t.light,
-    '--blue-text': t.text,
-    '--blue-muted': t.muted,
+    '--blue-dark': theme.dark,
+    '--blue-mid': theme.mid,
+    '--blue-acc': theme.acc,
+    '--blue-light': theme.light,
+    '--blue-text': theme.text,
+    '--blue-muted': theme.muted,
   } as React.CSSProperties;
 
   return (
@@ -28,20 +30,20 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
         <div className="cv-role">{data.role}</div>
         <hr className="cv-divider" />
         <div className="cv-s-block">
-          <div className="cv-s-label">Contacto</div>
+          <div className="cv-s-label">{t.contact}</div>
           {data.email && <div className="cv-s-item">{data.email}</div>}
           {data.phone && <div className="cv-s-item">{data.phone}</div>}
           {data.location && <div className="cv-s-item">{data.location}</div>}
         </div>
         {data.professionalSummary && (
           <div className="cv-s-block">
-            <div className="cv-s-label">Perfil</div>
+            <div className="cv-s-label">{t.profile}</div>
             <div className="cv-s-summary">{data.professionalSummary}</div>
           </div>
         )}
         {data.languages.length > 0 && (
           <div className="cv-s-block">
-            <div className="cv-s-label">Idiomas</div>
+            <div className="cv-s-label">{t.languages}</div>
             {data.languages.map(l => (
               <div className="cv-lang-row" key={l.id}>
                 <span className="cv-lang-name">{l.name}</span>
@@ -52,9 +54,9 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
         )}
         {(data.birth || data.nationality) && (
           <div className="cv-s-block">
-            <div className="cv-s-label">Datos</div>
-            {data.birth && <div className="cv-s-item">Nacimiento: {data.birth}</div>}
-            {data.nationality && <div className="cv-s-item">Nacionalidad: {data.nationality}</div>}
+            <div className="cv-s-label">{t.details}</div>
+            {data.birth && <div className="cv-s-item">{t.birthLabel} {data.birth}</div>}
+            {data.nationality && <div className="cv-s-item">{t.nationalityLabel} {data.nationality}</div>}
           </div>
         )}
       </div>
@@ -62,7 +64,7 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
       <div className="cv-main">
         {data.experience.length > 0 && (
           <div className="cv-section">
-            <div className="cv-m-label">Experiencia</div>
+            <div className="cv-m-label">{t.experience}</div>
             {data.experience.map(job => (
               <div className="cv-job" key={job.id}>
                 <div className="cv-job-head">
@@ -81,7 +83,7 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
 
         {data.education.length > 0 && (
           <div className="cv-section">
-            <div className="cv-m-label">Educación</div>
+            <div className="cv-m-label">{t.education}</div>
             {data.education.map(ed => (
               <div className="cv-job" key={ed.id}>
                 <div className="cv-job-head">
@@ -101,7 +103,7 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
 
         {data.skills.length > 0 && (
           <div className="cv-section">
-            <div className="cv-m-label">Habilidades Técnicas</div>
+            <div className="cv-m-label">{t.technicalSkills}</div>
             <div className="cv-skills">
               {data.skills.map((sk, i) => <span className="cv-skill" key={i}>{sk}</span>)}
             </div>

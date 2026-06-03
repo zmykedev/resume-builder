@@ -1,83 +1,87 @@
 import { Joyride, STATUS } from 'react-joyride';
 import type { EventData, Step } from 'react-joyride';
+import { useLang } from '../contexts/LangContext';
+import type { Translations } from '../i18n/translations';
 
-const steps: Step[] = [
-  {
-    target: '.editor-header h1',
-    title: 'Bienvenido a CV Maker',
-    content: 'Este tour te guiará por todas las funciones. Puedes saltarlo en cualquier momento.',
-    skipBeacon: true,
-    placement: 'bottom',
-  },
-  {
-    target: '.color-btn',
-    title: 'Tema de color',
-    content: 'Cambia la paleta de colores de tu CV. Tienes 6 opciones profesionales.',
-    placement: 'bottom',
-  },
-  {
-    target: '#tour-personal',
-    title: 'Datos Personales',
-    content: 'Ingresa tu nombre, rol, contacto y resumen profesional. Este resumen es clave para los sistemas ATS.',
-    placement: 'right',
-  },
-  {
-    target: '#tour-idiomas',
-    title: 'Idiomas',
-    content: 'Agrega los idiomas que manejas y tu nivel en cada uno.',
-    placement: 'right',
-  },
-  {
-    target: '#tour-experiencia',
-    title: 'Experiencia',
-    content: 'Añade tus trabajos anteriores. Usa los puntos clave para describir logros y responsabilidades concretas.',
-    placement: 'right',
-  },
-  {
-    target: '#tour-educacion',
-    title: 'Educación',
-    content: 'Registra tus estudios, bootcamps y certificaciones relevantes.',
-    placement: 'right',
-  },
-  {
-    target: '#tour-habilidades',
-    title: 'Habilidades',
-    content: 'Escribe una habilidad y presiona Enter para agregarla. Haz clic en ✕ para eliminarla.',
-    placement: 'right',
-  },
-  {
-    target: '.analyze-btn',
-    title: 'Análisis de Puesto',
-    content: 'Pega la descripción de un empleo y te mostramos qué tan bien coincide tu CV y qué keywords te faltan.',
-    placement: 'top',
-  },
-  {
-    target: '.ats-toggle',
-    title: 'Modos de vista',
-    content: '"Customizado" muestra el diseño visual. "Recomendado" es el formato ATS limpio, ideal para filtros automáticos.',
-    placement: 'bottom',
-  },
-  {
-    target: '.zoom-controls',
-    title: 'Zoom',
-    content: 'Ajusta el tamaño de la vista previa para revisar cada detalle.',
-    placement: 'bottom',
-  },
-  {
-    target: '.download-btn--pdf',
-    title: 'Exportar PDF',
-    content: 'Descarga tu CV como PDF listo para enviar.',
-    placement: 'top',
-    skipScroll: true,
-  },
-  {
-    target: '.download-btn--docx',
-    title: 'Exportar Word',
-    content: 'Descarga tu CV en formato Word para editarlo después.',
-    placement: 'top',
-    skipScroll: true,
-  },
-];
+function buildSteps(t: Translations): Step[] {
+  return [
+    {
+      target: '.editor-header h1',
+      title: t.tour.step1Title,
+      content: t.tour.step1Content,
+      skipBeacon: true,
+      placement: 'bottom',
+    },
+    {
+      target: '.color-btn',
+      title: t.tour.step2Title,
+      content: t.tour.step2Content,
+      placement: 'bottom',
+    },
+    {
+      target: '#tour-personal',
+      title: t.tour.step3Title,
+      content: t.tour.step3Content,
+      placement: 'right',
+    },
+    {
+      target: '#tour-idiomas',
+      title: t.tour.step4Title,
+      content: t.tour.step4Content,
+      placement: 'right',
+    },
+    {
+      target: '#tour-experiencia',
+      title: t.tour.step5Title,
+      content: t.tour.step5Content,
+      placement: 'right',
+    },
+    {
+      target: '#tour-educacion',
+      title: t.tour.step6Title,
+      content: t.tour.step6Content,
+      placement: 'right',
+    },
+    {
+      target: '#tour-habilidades',
+      title: t.tour.step7Title,
+      content: t.tour.step7Content,
+      placement: 'right',
+    },
+    {
+      target: '.analyze-btn',
+      title: t.tour.step8Title,
+      content: t.tour.step8Content,
+      placement: 'top',
+    },
+    {
+      target: '.ats-toggle',
+      title: t.tour.step9Title,
+      content: t.tour.step9Content,
+      placement: 'bottom',
+    },
+    {
+      target: '.zoom-controls',
+      title: t.tour.step10Title,
+      content: t.tour.step10Content,
+      placement: 'bottom',
+    },
+    {
+      target: '.download-btn--pdf',
+      title: t.tour.step11Title,
+      content: t.tour.step11Content,
+      placement: 'top',
+      skipScroll: true,
+    },
+    {
+      target: '.download-btn--docx',
+      title: t.tour.step12Title,
+      content: t.tour.step12Content,
+      placement: 'top',
+      skipScroll: true,
+    },
+  ];
+}
 
 interface GuidedTourProps {
   run: boolean;
@@ -85,6 +89,8 @@ interface GuidedTourProps {
 }
 
 export default function GuidedTour({ run, onFinish }: Readonly<GuidedTourProps>) {
+  const { t } = useLang();
+
   function handleEvent({ status }: EventData) {
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       onFinish();
@@ -93,7 +99,7 @@ export default function GuidedTour({ run, onFinish }: Readonly<GuidedTourProps>)
 
   return (
     <Joyride
-      steps={steps}
+      steps={buildSteps(t)}
       run={run}
       continuous
       onEvent={handleEvent}

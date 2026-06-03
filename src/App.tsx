@@ -11,7 +11,10 @@ import { useEffect, useState } from "react";
 import CVPreview from "./components/CVPreview";
 import Editor from "./components/Editor";
 import GuidedTour from "./components/GuidedTour";
-import { sampleData } from "./data/sampleData";
+import { LangProvider } from "./contexts/LangContext";
+import { useLang } from "./contexts/LangContext";
+import { detectLang } from "./i18n/translations";
+import { sampleData, sampleDataEn } from "./data/sampleData";
 import { themeColors } from "./data/themeColors";
 import type { CVData, ThemeName } from "./types";
 import { exportDocx } from "./utils/exportDocx";
@@ -19,8 +22,11 @@ import { exportPdf } from "./utils/exportPdf";
 
 const TOUR_KEY = "cv-maker-tour-seen";
 
-export default function App() {
-  const [data, setData] = useState<CVData>(sampleData);
+const initialData = detectLang() === 'en' ? sampleDataEn : sampleData;
+
+function AppInner() {
+  const { t } = useLang();
+  const [data, setData] = useState<CVData>(initialData);
   const [loadingPdf, setLoadingPdf] = useState(false);
   const [loadingDocx, setLoadingDocx] = useState(false);
   const [showColors, setShowColors] = useState(false);
@@ -66,8 +72,8 @@ export default function App() {
       <div className="app">
         <div className="editor-panel">
           <div className="editor-header">
-            <h1>Fast CV</h1>
-            <span className="header-badge">Editor</span>
+            <h1>{t.appTitle}</h1>
+            <span className="header-badge">{t.editorBadge}</span>
           </div>
           <Editor data={data} setData={setData} />
           <div className="editor-footer">
@@ -84,9 +90,9 @@ export default function App() {
                 )}
                 <span className="download-text">
                   <span className="download-label">
-                    {loadingPdf ? "Generando..." : "Exportar PDF"}
+                    {loadingPdf ? t.generating : t.exportPdf}
                   </span>
-                  <span className="download-hint">Currículum en PDF</span>
+                  <span className="download-hint">{t.resumePdf}</span>
                 </span>
               </button>
               <button
@@ -101,9 +107,9 @@ export default function App() {
                 )}
                 <span className="download-text">
                   <span className="download-label">
-                    {loadingDocx ? "Generando..." : "Exportar DOCX"}
+                    {loadingDocx ? t.generating : t.exportDocx}
                   </span>
-                  <span className="download-hint">Currículum en Word</span>
+                  <span className="download-hint">{t.resumeDocx}</span>
                 </span>
               </button>
             </div>
@@ -112,15 +118,14 @@ export default function App() {
 
         <div className="preview-panel">
           <div className="preview-header">
-            <span className="preview-label">Vista previa · A4</span>
+            <span className="preview-label">{t.preview}</span>
             <div className="preview-toolbar">
 
-              {/* Color picker — moved from editor header */}
               <div className="color-picker">
                 <button
                   className="color-btn"
                   onClick={() => setShowColors((o) => !o)}
-                  title="Color del tema"
+                  title={t.themeColor}
                 >
                   <PaintBucketIcon className="color-btn-icon" weight="fill" />
                   <span
@@ -137,7 +142,7 @@ export default function App() {
                     <button
                       className="color-backdrop"
                       onClick={() => setShowColors(false)}
-                      aria-label="Cerrar selector de color"
+                      aria-label={t.closeColorPicker}
                     />
                     <div className="color-dropdown">
                       {Object.entries(themeColors).map(([name, colors]) => (
@@ -165,11 +170,10 @@ export default function App() {
                 )}
               </div>
 
-              {/* Help / tour button — moved from editor header */}
               <button
                 className="tour-btn"
                 onClick={() => setRunTour(true)}
-                title="Tour guiado"
+                title={t.guidedTour}
               >
                 <QuestionIcon weight="fill" />
               </button>
@@ -179,13 +183,13 @@ export default function App() {
                   className={atsMode ? "ats-toggle-btn" : "ats-toggle-btn active"}
                   onClick={() => setAtsMode(false)}
                 >
-                  Customizado
+                  {t.customized}
                 </button>
                 <button
                   className={atsMode ? "ats-toggle-btn active" : "ats-toggle-btn"}
                   onClick={() => setAtsMode(true)}
                 >
-                  Recomendado
+                  {t.recommended}
                 </button>
               </div>
 
@@ -194,7 +198,7 @@ export default function App() {
                   className="zoom-btn"
                   onClick={() => setZoom((z) => Math.max(0.5, z - 0.1))}
                   disabled={zoom <= 0.5}
-                  title="Alejar"
+                  title={t.zoomOut}
                 >
                   <MinusIcon weight="bold" />
                 </button>
@@ -203,7 +207,7 @@ export default function App() {
                   className="zoom-btn"
                   onClick={() => setZoom((z) => Math.min(2, z + 0.1))}
                   disabled={zoom >= 2}
-                  title="Acercar"
+                  title={t.zoomIn}
                 >
                   <PlusIcon weight="bold" />
                 </button>
@@ -228,5 +232,13 @@ export default function App() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <LangProvider>
+      <AppInner />
+    </LangProvider>
   );
 }

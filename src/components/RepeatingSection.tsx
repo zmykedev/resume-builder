@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useLang } from '../contexts/LangContext';
 
 interface RepeatableItem {
   id: number;
@@ -21,7 +22,8 @@ const uid = () => ++nextId;
 
 export default function RepeatingSection<T extends RepeatableItem>({
   title, sectionId, items, onAdd, onRemove, renderItem, emptyItem,
-}: RepeatingSectionProps<T>) {
+}: Readonly<RepeatingSectionProps<T>>) {
+  const { t } = useLang();
   return (
     <div id={sectionId} className="field-group">
       <div className="group-title">{title}</div>
@@ -35,7 +37,7 @@ export default function RepeatingSection<T extends RepeatableItem>({
         </div>
       ))}
       <button className="add-btn" onClick={() => onAdd({ id: uid(), ...emptyItem } as T)}>
-        + Agregar {title.toLowerCase()}
+        {t.addItem} {title.toLowerCase()}
       </button>
     </div>
   );

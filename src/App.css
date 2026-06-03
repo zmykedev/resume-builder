@@ -1003,3 +1003,56 @@ textarea {
   font-size: 11px;
   color: #e65100;
 }
+
+/* ─────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-panel {
+    height: auto;
+    position: static;
+  }
+
+  .preview-panel {
+    border-top: 1px solid #e0e5ec;
+    padding-bottom: 2rem;
+  }
+
+  .preview-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .preview-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  .two-col,
+  .three-col {
+    grid-template-columns: 1fr;
+  }
+
+  .download-row {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-header h1 {
+    font-size: 16px;
+  }
+
+  .preview-label {
+    font-size: 11px;
+  }
+
+  .ats-toggle-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+}

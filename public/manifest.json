@@ -1,0 +1,20 @@
+{
+  "name": "Fast CV — Resume Builder",
+  "short_name": "Fast CV",
+  "description": "Build a professional resume in minutes. Export to PDF and Word.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#0c447c",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

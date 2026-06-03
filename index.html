@@ -3,8 +3,68 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CV Maker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Primary meta -->
+    <title>Fast CV — Free Resume Builder</title>
+    <meta name="description" content="Build a professional resume in minutes. Export to PDF and Word. ATS-friendly templates with keyword match analysis. 100% free." />
+    <meta name="keywords" content="resume builder, CV maker, free resume, ATS resume, PDF resume, Word resume, curriculum vitae" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0c447c" />
+    <meta name="color-scheme" content="light" />
+    <meta name="author" content="Fast CV" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fast CV — Free Resume Builder" />
+    <meta property="og:description" content="Build a professional resume in minutes. Export to PDF and Word. ATS-friendly templates with keyword match analysis." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_CL" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fast CV — Free Resume Builder" />
+    <meta name="twitter:description" content="Build a professional resume in minutes. Free, ATS-optimized, with PDF and Word export." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Non-blocking Google Fonts (eliminates render-blocking resource) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" />
+    </noscript>
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Fast CV",
+      "description": "Free online resume builder with PDF and Word export. ATS-optimized templates with keyword analysis.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "PDF export",
+        "Word export",
+        "ATS optimization",
+        "Keyword analysis",
+        "Multiple color themes",
+        "Guided tour"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

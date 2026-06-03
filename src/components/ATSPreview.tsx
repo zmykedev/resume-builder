@@ -1,10 +1,12 @@
+import { useLang } from '../contexts/LangContext';
 import type { CVData } from '../types';
 
 interface ATSPreviewProps {
   data: CVData;
 }
 
-export default function ATSPreview({ data }: ATSPreviewProps) {
+export default function ATSPreview({ data }: Readonly<ATSPreviewProps>) {
+  const { t } = useLang();
   const contactParts = [data.email, data.phone, data.location].filter(Boolean);
   const contactLine = contactParts.join(' | ');
 
@@ -18,14 +20,14 @@ export default function ATSPreview({ data }: ATSPreviewProps) {
 
       {data.professionalSummary && (
         <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">PERFIL PROFESIONAL</h2>
+          <h2 className="cv-ats-heading">{t.professionalProfile}</h2>
           <p className="cv-ats-summary">{data.professionalSummary}</p>
         </section>
       )}
 
       {data.experience.length > 0 && (
         <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">EXPERIENCIA</h2>
+          <h2 className="cv-ats-heading">{t.experienceAts}</h2>
           {data.experience.map((job) => (
             <div className="cv-ats-item" key={job.id}>
               <div className="cv-ats-item-head">
@@ -46,7 +48,7 @@ export default function ATSPreview({ data }: ATSPreviewProps) {
 
       {data.education.length > 0 && (
         <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">EDUCACIÓN</h2>
+          <h2 className="cv-ats-heading">{t.educationAts}</h2>
           {data.education.map((ed) => (
             <div className="cv-ats-item" key={ed.id}>
               <div className="cv-ats-item-head">
@@ -67,7 +69,7 @@ export default function ATSPreview({ data }: ATSPreviewProps) {
 
       {data.languages.length > 0 && (
         <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">IDIOMAS</h2>
+          <h2 className="cv-ats-heading">{t.languagesAts}</h2>
           <p className="cv-ats-languages">
             {data.languages.map((l) => `${l.name} (${l.level})`).join(' · ')}
           </p>
@@ -76,7 +78,7 @@ export default function ATSPreview({ data }: ATSPreviewProps) {
 
       {data.skills.length > 0 && (
         <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">HABILIDADES TÉCNICAS</h2>
+          <h2 className="cv-ats-heading">{t.technicalSkillsAts}</h2>
           <p className="cv-ats-skills">{data.skills.join(' · ')}</p>
         </section>
       )}

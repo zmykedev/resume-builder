@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { analyzeJobDescription } from '../utils/keywordMatcher';
+import { useLang } from '../contexts/LangContext';
 import type { CVData, AnalysisResult, AnalysisError } from '../types';
 
 interface KeywordAnalyzerProps {
@@ -12,19 +13,20 @@ function getCoverageStyle(coverage: number): React.CSSProperties {
   return { background: '#fce4ec', color: '#c62828' };
 }
 
-export default function KeywordAnalyzer({ data }: KeywordAnalyzerProps) {
+export default function KeywordAnalyzer({ data }: Readonly<KeywordAnalyzerProps>) {
+  const { t } = useLang();
   const [jdText, setJdText] = useState(data?.jobDescription ?? '');
   const [result, setResult] = useState<AnalysisResult | AnalysisError | null>(null);
 
   function handleAnalyze() {
     const trimmed = jdText.trim();
     if (!trimmed) {
-      setResult({ error: 'Pega una descripción de puesto para analizar.' });
+      setResult({ error: t.errorNoPaste });
       return;
     }
     const analysis = analyzeJobDescription(trimmed, data);
     if (analysis.found.length === 0 && analysis.missing.length === 0) {
-      setResult({ error: 'No se encontraron keywords técnicas en la descripción. Intenta con un texto más detallado.' });
+      setResult({ error: t.errorNoKeywords });
       return;
     }
     setResult(analysis);
@@ -35,17 +37,17 @@ export default function KeywordAnalyzer({ data }: KeywordAnalyzerProps) {
 
   return (
     <div className="field-group">
-      <div className="group-title">Análisis de Puesto</div>
-      <label>Descripción del puesto (JD)</label>
+      <div className="group-title">{t.jobAnalysis}</div>
+      <label>{t.jobDescriptionLabel}</label>
       <textarea
         className="jd-textarea"
         rows={6}
-        placeholder="Pega aquí la descripción del puesto para analizar la coincidencia con tu CV..."
+        placeholder={t.jobDescriptionPlaceholder}
         value={jdText}
         onChange={(e) => setJdText(e.target.value)}
       />
       <button className="analyze-btn" onClick={handleAnalyze}>
-        Analizar coincidencia
+        {t.analyzeBtn}
       </button>
 
       {hasError && <div className="kw-error">{(result as AnalysisError).error}</div>}
@@ -56,15 +58,15 @@ export default function KeywordAnalyzer({ data }: KeywordAnalyzerProps) {
           <div className="kw-results">
             <div className="kw-coverage">
               <span className="kw-coverage-badge" style={getCoverageStyle(r.coverage)}>
-                {r.coverage}% coincidencia
+                {r.coverage}% {t.matchCoverage}
               </span>
               <span className="kw-coverage-text">
-                {r.found.length} encontradas · {r.missing.length} faltantes
+                {r.found.length} {t.foundCount} · {r.missing.length} {t.missingCount}
               </span>
             </div>
             {r.missing.length > 0 && (
               <div className="kw-section">
-                <div className="kw-section-title missing">FALTANTES ({r.missing.length})</div>
+                <div className="kw-section-title missing">{t.missingLabel} ({r.missing.length})</div>
                 <div className="kw-tags">
                   {r.missing.map((item) => (
                     <span key={item.keyword} className="kw-tag kw-tag--missing" title={item.suggest}>
@@ -77,7 +79,7 @@ export default function KeywordAnalyzer({ data }: KeywordAnalyzerProps) {
             )}
             {r.found.length > 0 && (
               <div className="kw-section">
-                <div className="kw-section-title found">ENCONTRADAS ({r.found.length})</div>
+                <div className="kw-section-title found">{t.foundLabel} ({r.found.length})</div>
                 <div className="kw-tags">
                   {r.found.map((keyword) => (
                     <span key={keyword} className="kw-tag kw-tag--found">{keyword}</span>

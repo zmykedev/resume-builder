@@ -3,6 +3,7 @@ import TextField from './TextField';
 import BulletList from './BulletList';
 import RepeatingSection from './RepeatingSection';
 import KeywordAnalyzer from './KeywordAnalyzer';
+import { useLang } from '../contexts/LangContext';
 import type { CVData, ExperienceItem, EducationItem, LanguageItem } from '../types';
 
 interface EditorProps {
@@ -14,6 +15,8 @@ let nextId = 200;
 const uid = () => ++nextId;
 
 export default function Editor({ data, setData }: EditorProps) {
+  const { t } = useLang();
+
   const upd = <K extends keyof CVData>(k: K, v: CVData[K]) =>
     setData(d => ({ ...d, [k]: v }));
 
@@ -42,51 +45,51 @@ export default function Editor({ data, setData }: EditorProps) {
   return (
     <div className="editor-body">
       <div id="tour-personal" className="field-group">
-        <div className="group-title">Datos Personales</div>
-        <TextField label="Nombre completo" value={data.name} onChange={v => upd('name', v)} />
-        <TextField label="Rol / Título profesional" value={data.role} onChange={v => upd('role', v)} />
+        <div className="group-title">{t.personalData}</div>
+        <TextField label={t.fullName} value={data.name} onChange={v => upd('name', v)} />
+        <TextField label={t.roleTitle} value={data.role} onChange={v => upd('role', v)} />
         <div className="two-col">
-          <TextField label="Email" value={data.email} onChange={v => upd('email', v)} />
-          <TextField label="Teléfono" value={data.phone} onChange={v => upd('phone', v)} />
+          <TextField label={t.email} value={data.email} onChange={v => upd('email', v)} />
+          <TextField label={t.phone} value={data.phone} onChange={v => upd('phone', v)} />
         </div>
         <div className="two-col">
-          <TextField label="Ubicación" value={data.location} onChange={v => upd('location', v)} />
-          <TextField label="Nacionalidad" value={data.nationality} onChange={v => upd('nationality', v)} />
+          <TextField label={t.location} value={data.location} onChange={v => upd('location', v)} />
+          <TextField label={t.nationality} value={data.nationality} onChange={v => upd('nationality', v)} />
         </div>
-        <TextField label="Fecha de nacimiento" value={data.birth} onChange={v => upd('birth', v)} />
+        <TextField label={t.birthDate} value={data.birth} onChange={v => upd('birth', v)} />
         <TextField
-          label="Resumen Profesional (keywords)"
+          label={t.professionalSummaryLabel}
           value={data.professionalSummary}
           onChange={v => upd('professionalSummary', v)}
           multiline
-          placeholder="Resumen profesional optimizado para ATS y búsquedas."
+          placeholder={t.summaryPlaceholder}
         />
       </div>
 
       <div id="tour-idiomas" className="field-group">
-        <div className="group-title">Idiomas</div>
+        <div className="group-title">{t.languages}</div>
         {data.languages.map(l => (
           <div className="repeating-item" key={l.id}>
             <div className="item-header">
-              <span className="item-label">{l.name || 'Idioma'}</span>
+              <span className="item-label">{l.name || t.language}</span>
               <button className="remove-btn" onClick={() => removeItem('languages', l.id)}>×</button>
             </div>
             <div className="two-col">
-              <input type="text" placeholder="Idioma" value={l.name}
+              <input type="text" placeholder={t.language} value={l.name}
                 onChange={e => updItem<LanguageItem>('languages', l.id, 'name', e.target.value)} />
-              <input type="text" placeholder="Nivel" value={l.level}
+              <input type="text" placeholder={t.level} value={l.level}
                 onChange={e => updItem<LanguageItem>('languages', l.id, 'level', e.target.value)} />
             </div>
           </div>
         ))}
         <button className="add-btn"
           onClick={() => addItem<LanguageItem>('languages', { id: uid(), name: '', level: '' })}>
-          + Agregar idioma
+          {t.addLanguage}
         </button>
       </div>
 
       <RepeatingSection<ExperienceItem>
-        title="Experiencia"
+        title={t.experience}
         sectionId="tour-experiencia"
         items={data.experience}
         emptyItem={{ title: '', company: '', date: '', bullets: [''] }}
@@ -94,12 +97,12 @@ export default function Editor({ data, setData }: EditorProps) {
         onRemove={id => removeItem('experience', id)}
         renderItem={(item) => (
           <>
-            <TextField label="Cargo" value={item.title}
+            <TextField label={t.position} value={item.title}
               onChange={v => updItem<ExperienceItem>('experience', item.id, 'title', v)} />
             <div className="two-col">
-              <TextField label="Empresa" value={item.company}
+              <TextField label={t.company} value={item.company}
                 onChange={v => updItem<ExperienceItem>('experience', item.id, 'company', v)} />
-              <TextField label="Período" value={item.date}
+              <TextField label={t.period} value={item.date}
                 onChange={v => updItem<ExperienceItem>('experience', item.id, 'date', v)} />
             </div>
             <BulletList bullets={item.bullets} onChange={b => updBullets('experience', item.id, b)} />
@@ -108,7 +111,7 @@ export default function Editor({ data, setData }: EditorProps) {
       />
 
       <RepeatingSection<EducationItem>
-        title="Educación"
+        title={t.education}
         sectionId="tour-educacion"
         items={data.education}
         emptyItem={{ title: '', school: '', date: '', bullets: [] }}
@@ -116,12 +119,12 @@ export default function Editor({ data, setData }: EditorProps) {
         onRemove={id => removeItem('education', id)}
         renderItem={(item) => (
           <>
-            <TextField label="Título / Curso" value={item.title}
+            <TextField label={t.degreeCourse} value={item.title}
               onChange={v => updItem<EducationItem>('education', item.id, 'title', v)} />
             <div className="two-col">
-              <TextField label="Institución" value={item.school}
+              <TextField label={t.institution} value={item.school}
                 onChange={v => updItem<EducationItem>('education', item.id, 'school', v)} />
-              <TextField label="Fecha" value={item.date}
+              <TextField label={t.date} value={item.date}
                 onChange={v => updItem<EducationItem>('education', item.id, 'date', v)} />
             </div>
             <BulletList bullets={item.bullets} onChange={b => updBullets('education', item.id, b)} />
@@ -130,7 +133,7 @@ export default function Editor({ data, setData }: EditorProps) {
       />
 
       <div id="tour-habilidades" className="field-group">
-        <div className="group-title">Habilidades</div>
+        <div className="group-title">{t.skills}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
           {data.skills.map((sk, i) => (
             <span key={i} style={{ background: '#E6F1FB', color: '#0C447C', borderRadius: 100, padding: '3px 10px', fontSize: 11, display: 'flex', alignItems: 'center', gap: 5, border: '0.5px solid #B5D4F4' }}>
@@ -145,7 +148,7 @@ export default function Editor({ data, setData }: EditorProps) {
             type="text"
             value={skillInput}
             onChange={e => setSkillInput(e.target.value)}
-            placeholder="Agregar habilidad y presionar Enter..."
+            placeholder={t.addSkillPlaceholder}
             style={{ marginBottom: 0 }}
             onKeyDown={e => {
               if (e.key === 'Enter' && skillInput.trim()) {
