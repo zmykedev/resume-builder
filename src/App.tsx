@@ -1,8 +1,10 @@
 import {
   CaretDownIcon,
+  EyeIcon,
   FileDocIcon,
   FilePdfIcon,
   MinusIcon,
+  NotePencilIcon,
   PaintBucketIcon,
   PlusIcon,
   QuestionIcon,
@@ -32,6 +34,7 @@ function AppInner() {
   const [atsMode, setAtsMode] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [runTour, setRunTour] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
 
   const activeTheme = hoverTheme || data.theme;
 
@@ -40,6 +43,12 @@ function AppInner() {
       setRunTour(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (mobileTab === 'preview' && window.innerWidth <= 900) {
+      setZoom(Math.max(0.3, Math.round(window.innerWidth / 794 * 10) / 10));
+    }
+  }, [mobileTab]);
 
   const handleTourFinish = () => {
     setRunTour(false);
@@ -72,10 +81,15 @@ function AppInner() {
     <>
       {runTour && (
         <Suspense fallback={null}>
-          <GuidedTour run={runTour} onFinish={handleTourFinish} />
+          <GuidedTour
+            run={runTour}
+            onFinish={handleTourFinish}
+            isMobile={window.innerWidth <= 900}
+            onTabSwitch={setMobileTab}
+          />
         </Suspense>
       )}
-      <main className="app">
+      <main className="app" data-mobile-tab={mobileTab}>
         <div className="editor-panel">
           <div className="editor-header">
             <h1>{t.appTitle}</h1>
@@ -125,9 +139,9 @@ function AppInner() {
         <div className="preview-panel">
           <div className="preview-header">
             <span className="preview-label">{t.preview}</span>
-            <div className="preview-toolbar">
+            <div className={`preview-toolbar${atsMode ? ' preview-toolbar--ats' : ''}`}>
 
-              <div className="color-picker">
+              {!atsMode && <div className="color-picker">
                 <button
                   className="color-btn"
                   onClick={() => setShowColors((o) => !o)}
@@ -177,7 +191,7 @@ function AppInner() {
                     </div>
                   </>
                 )}
-              </div>
+              </div>}
 
               <button
                 className="tour-btn"
@@ -197,7 +211,7 @@ function AppInner() {
                 </button>
                 <button
                   className={atsMode ? "ats-toggle-btn active" : "ats-toggle-btn"}
-                  onClick={() => setAtsMode(true)}
+                  onClick={() => { setAtsMode(true); setShowColors(false); }}
                   aria-pressed={atsMode}
                 >
                   {t.recommended}
@@ -229,9 +243,10 @@ function AppInner() {
           <div
             className="preview-zoom-wrapper"
             style={{
+              '--zoom': zoom,
               transform: `scale(${zoom})`,
               transformOrigin: "top center",
-            }}
+            } as React.CSSProperties}
           >
             <CVPreview
               data={data}
@@ -241,6 +256,25 @@ function AppInner() {
             />
           </div>
         </div>
+
+        <nav className="mobile-tabbar" aria-label="Navigation">
+          <button
+            className={`mobile-tab${mobileTab === 'editor' ? ' active' : ''}`}
+            onClick={() => setMobileTab('editor')}
+            aria-pressed={mobileTab === 'editor'}
+          >
+            <NotePencilIcon weight={mobileTab === 'editor' ? 'fill' : 'regular'} />
+            <span>Edit</span>
+          </button>
+          <button
+            className={`mobile-tab${mobileTab === 'preview' ? ' active' : ''}`}
+            onClick={() => setMobileTab('preview')}
+            aria-pressed={mobileTab === 'preview'}
+          >
+            <EyeIcon weight={mobileTab === 'preview' ? 'fill' : 'regular'} />
+            <span>Preview</span>
+          </button>
+        </nav>
       </main>
     </>
   );

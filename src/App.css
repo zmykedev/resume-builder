@@ -1017,6 +1017,11 @@ textarea {
 }
 
 /* ─────────────────────────────────────────────────────────
+   MOBILE TAB BAR (hidden on desktop)
+───────────────────────────────────────────────────────── */
+.mobile-tabbar { display: none; }
+
+/* ─────────────────────────────────────────────────────────
    RESPONSIVE
 ───────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
@@ -1024,24 +1029,109 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  /* Panel visibility driven by active tab */
+  .app[data-mobile-tab="preview"] .editor-panel { display: none; }
+  .app[data-mobile-tab="editor"]  .preview-panel { display: none; }
+
   .editor-panel {
-    height: auto;
+    height: calc(100dvh - 60px);
     position: static;
   }
 
   .preview-panel {
-    border-top: 1px solid #e0e5ec;
-    padding-bottom: 2rem;
+    padding: 0;
+    min-height: calc(100dvh - 60px);
   }
 
+  /* Preview header goes edge-to-edge on mobile */
   .preview-header {
-    flex-wrap: wrap;
-    gap: 8px;
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 0;
+    padding: 0.5rem 0.8rem;
+    gap: 0;
   }
 
+  /* Tab bar already shows "Preview" — label is redundant on mobile */
+  .preview-label { display: none; }
+
+  /* Grid layout: ATS toggle spans full width on row 1,
+     color picker left + zoom right on row 2 */
   .preview-toolbar {
-    flex-wrap: wrap;
-    gap: 6px;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      "ats   ats"
+      "color zoom";
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ats-toggle {
+    grid-area: ats;
+    justify-content: center;
+  }
+
+  .color-picker { grid-area: color; }
+  .zoom-controls { grid-area: zoom; }
+
+  /* ATS mode: no color picker — collapse to a single row */
+  .preview-toolbar--ats {
+    grid-template-areas: "ats zoom";
+  }
+
+  /* Collapse the excess layout space that transform:scale() leaves behind.
+     scale() shrinks visually but doesn't reduce layout height, so without
+     this correction the panel scrolls into ~(1-zoom)*1123px of empty space. */
+  .preview-zoom-wrapper {
+    padding: 1rem 0;
+    margin-bottom: calc((var(--zoom, 1) - 1) * 1123px);
+  }
+
+  /* No tour on mobile */
+  .tour-btn { display: none; }
+
+  /* ── Mobile tab bar ── */
+  .mobile-tabbar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--blue-dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    z-index: 200;
+    /* safe area for phones with home indicator */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 0;
+    min-height: 44px;
+  }
+
+  .mobile-tab.active { color: #ffffff; }
+
+  .mobile-tab svg {
+    width: 22px;
+    height: 22px;
   }
 }
 

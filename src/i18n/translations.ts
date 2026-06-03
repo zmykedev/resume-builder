@@ -129,6 +129,8 @@ export const translations = {
       step11Content: 'Descarga tu CV como PDF listo para enviar.',
       step12Title: 'Exportar Word',
       step12Content: 'Descarga tu CV en formato Word para editarlo después.',
+      stepMobileTabTitle: '¡Casi terminamos!',
+      stepMobileTabContent: 'Toca "Preview" para explorar el diseño de tu CV, cambiar colores y activar el modo ATS.',
     },
   },
   en: {
@@ -223,6 +225,8 @@ export const translations = {
       step11Content: 'Download your resume as a PDF ready to send.',
       step12Title: 'Export Word',
       step12Content: 'Download your resume in Word format to edit it later.',
+      stepMobileTabTitle: 'Almost done!',
+      stepMobileTabContent: 'Tap "Preview" to explore your CV design, change colours, and toggle ATS mode.',
     },
   },
 } as const;
