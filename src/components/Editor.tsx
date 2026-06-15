@@ -9,31 +9,41 @@ import type { CVData, ExperienceItem, EducationItem, LanguageItem } from '../typ
 interface EditorProps {
   data: CVData;
   setData: (updater: (d: CVData) => CVData) => void;
+  onFirstEdit?: () => void;
 }
 
 let nextId = 200;
 const uid = () => ++nextId;
+let hasEdited = false;
 
-export default function Editor({ data, setData }: EditorProps) {
+export default function Editor({ data, setData, onFirstEdit }: EditorProps) {
   const { t } = useLang();
 
+  const track = (d: CVData) => {
+    if (!hasEdited && onFirstEdit) {
+      hasEdited = true;
+      onFirstEdit();
+    }
+    return d;
+  };
+
   const upd = <K extends keyof CVData>(k: K, v: CVData[K]) =>
-    setData(d => ({ ...d, [k]: v }));
+    setData(d => track({ ...d, [k]: v }));
 
   const updItem = <T extends { id: number }>(key: keyof CVData, id: number, field: keyof T, val: unknown) =>
-    setData(d => ({
+    setData(d => track({
       ...d,
       [key]: (d[key] as unknown as T[]).map(it => it.id === id ? { ...it, [field]: val } : it),
     }));
 
   const addItem = <T,>(key: keyof CVData, item: T) =>
-    setData(d => ({ ...d, [key]: [...(d[key] as T[]), item] }));
+    setData(d => track({ ...d, [key]: [...(d[key] as T[]), item] }));
 
   const removeItem = (key: keyof CVData, id: number) =>
-    setData(d => ({ ...d, [key]: (d[key] as { id: number }[]).filter(it => it.id !== id) }));
+    setData(d => track({ ...d, [key]: (d[key] as { id: number }[]).filter(it => it.id !== id) }));
 
   const updBullets = (key: keyof CVData, id: number, bullets: string[]) =>
-    setData(d => ({
+    setData(d => track({
       ...d,
       [key]: (d[key] as { id: number; bullets: string[] }[]).map(it =>
         it.id === id ? { ...it, bullets } : it

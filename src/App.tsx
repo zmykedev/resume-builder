@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import CVPreview from "./components/CVPreview";
+import WelcomeOverlay from "./components/WelcomeOverlay";
 import Editor from "./components/Editor";
 import { LangProvider, useLang } from "./contexts/LangContext";
 import { detectLang } from "./i18n/translations";
@@ -21,7 +22,24 @@ import type { CVData, ThemeName } from "./types";
 // Loaded only when the user actually opens the tour
 const GuidedTour = lazy(() => import('./components/GuidedTour'));
 
-const TOUR_KEY = "cv-maker-tour-seen";
+const emptyData: CVData = {
+  name: '',
+  role: '',
+  email: '',
+  phone: '',
+  location: '',
+  birth: '',
+  nationality: '',
+  professionalSummary: '',
+  jobDescription: '',
+  atsMode: false,
+  languages: [],
+  experience: [],
+  education: [],
+  theme: 'blue',
+  skills: [],
+};
+
 const initialData = detectLang() === 'en' ? sampleDataEn : sampleData;
 
 function AppInner() {
@@ -34,15 +52,10 @@ function AppInner() {
   const [atsMode, setAtsMode] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [runTour, setRunTour] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
 
   const activeTheme = hoverTheme || data.theme;
-
-  useEffect(() => {
-    if (!localStorage.getItem(TOUR_KEY)) {
-      setRunTour(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (mobileTab === 'preview' && window.innerWidth <= 900) {
@@ -50,9 +63,17 @@ function AppInner() {
     }
   }, [mobileTab]);
 
-  const handleTourFinish = () => {
-    setRunTour(false);
-    localStorage.setItem(TOUR_KEY, "1");
+  const handleTourFinish = () => setRunTour(false);
+
+  // CTA button: dismiss overlay + start fresh with empty skeleton
+  const handleWelcomeCta = () => {
+    setShowWelcome(false);
+    setData({ ...emptyData });
+  };
+
+  // First edit in editor: dismiss overlay, keep existing data (user is editing)
+  const handleFirstEdit = () => {
+    if (showWelcome) setShowWelcome(false);
   };
 
   // Dynamic imports: html2pdf.js (~180 KB) and docx (~90 KB) are only fetched
@@ -95,7 +116,7 @@ function AppInner() {
             <h1>{t.appTitle}</h1>
             <span className="header-badge">{t.editorBadge}</span>
           </div>
-          <Editor data={data} setData={setData} />
+          <Editor data={data} setData={setData} onFirstEdit={handleFirstEdit} />
           <div className="editor-footer">
             <div className="download-row">
               <button
@@ -240,20 +261,23 @@ function AppInner() {
 
             </div>
           </div>
-          <div
-            className="preview-zoom-wrapper"
-            style={{
-              '--zoom': zoom,
-              transform: `scale(${zoom})`,
-              transformOrigin: "top center",
-            } as React.CSSProperties}
-          >
-            <CVPreview
-              data={data}
-              themeColors={themeColors}
-              previewTheme={hoverTheme}
-              atsMode={atsMode}
-            />
+          <div className="preview-stage">
+            {showWelcome && <WelcomeOverlay onDismiss={handleWelcomeCta} />}
+            <div
+              className="preview-zoom-wrapper"
+              style={{
+                '--zoom': zoom,
+                transform: `scale(${zoom})`,
+                transformOrigin: "top center",
+              } as React.CSSProperties}
+            >
+              <CVPreview
+                data={data}
+                themeColors={themeColors}
+                previewTheme={hoverTheme}
+                atsMode={atsMode}
+              />
+            </div>
           </div>
 
           {/* Download buttons pinned to bottom of preview panel on mobile */}

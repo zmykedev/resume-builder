@@ -35,23 +35,27 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
           {data.phone && <div className="cv-s-item">{data.phone}</div>}
           {data.location && <div className="cv-s-item">{data.location}</div>}
         </div>
-        {data.professionalSummary && (
-          <div className="cv-s-block">
-            <div className="cv-s-label">{t.profile}</div>
+        <div className="cv-s-block">
+          <div className="cv-s-label">{t.profile}</div>
+          {data.professionalSummary ? (
             <div className="cv-s-summary">{data.professionalSummary}</div>
-          </div>
-        )}
-        {data.languages.length > 0 && (
-          <div className="cv-s-block">
-            <div className="cv-s-label">{t.languages}</div>
-            {data.languages.map(l => (
+          ) : (
+            <div className="cv-s-empty">Añade un resumen profesional en el editor</div>
+          )}
+        </div>
+        <div className="cv-s-block">
+          <div className="cv-s-label">{t.languages}</div>
+          {data.languages.length > 0 ? (
+            data.languages.map(l => (
               <div className="cv-lang-row" key={l.id}>
                 <span className="cv-lang-name">{l.name}</span>
                 <span className="cv-lang-level">{l.level}</span>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          ) : (
+            <div className="cv-s-empty">Añade idiomas en el editor</div>
+          )}
+        </div>
         {(data.birth || data.nationality) && (
           <div className="cv-s-block">
             <div className="cv-s-label">{t.details}</div>
@@ -62,10 +66,10 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
       </div>
 
       <div className="cv-main">
-        {data.experience.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">{t.experience}</div>
-            {data.experience.map(job => (
+        <div className="cv-section">
+          <div className="cv-m-label">{t.experience}</div>
+          {data.experience.length > 0 ? (
+            data.experience.map(job => (
               <div className="cv-job" key={job.id}>
                 <div className="cv-job-head">
                   <div className="cv-job-title">{job.title}{job.company ? ` — ${job.company}` : ''}</div>
@@ -77,14 +81,16 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
                   </ul>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          ) : (
+            <div className="cv-section-empty">Añade tu experiencia laboral en el editor</div>
+          )}
+        </div>
 
-        {data.education.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">{t.education}</div>
-            {data.education.map(ed => (
+        <div className="cv-section">
+          <div className="cv-m-label">{t.education}</div>
+          {data.education.length > 0 ? (
+            data.education.map(ed => (
               <div className="cv-job" key={ed.id}>
                 <div className="cv-job-head">
                   <div className="cv-job-title">{ed.title}</div>
@@ -97,18 +103,22 @@ export default function CVPreview({ data, themeColors, previewTheme, atsMode }: 
                   </ul>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          ) : (
+            <div className="cv-section-empty">Añade tu formación académica en el editor</div>
+          )}
+        </div>
 
-        {data.skills.length > 0 && (
-          <div className="cv-section">
-            <div className="cv-m-label">{t.technicalSkills}</div>
+        <div className="cv-section">
+          <div className="cv-m-label">{t.technicalSkills}</div>
+          {data.skills.length > 0 ? (
             <div className="cv-skills">
               {data.skills.map((sk, i) => <span className="cv-skill" key={i}>{sk}</span>)}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="cv-section-empty">Añade habilidades técnicas en el editor</div>
+          )}
+        </div>
       </div>
     </div>
   );

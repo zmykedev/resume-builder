@@ -56,8 +56,29 @@ interface GuidedTourProps {
   onTabSwitch?: (tab: 'editor' | 'preview') => void;
 }
 
+const JOYRIDE_LOCALE = {
+  es: {
+    back: 'Anterior',
+    close: 'Cerrar',
+    last: 'Último',
+    next: 'Siguiente',
+    nextWithProgress: 'Siguiente ({current} de {total})',
+    open: 'Abrir',
+    skip: 'Saltar',
+  },
+  en: {
+    back: 'Back',
+    close: 'Close',
+    last: 'Last',
+    next: 'Next',
+    nextWithProgress: 'Next ({current} of {total})',
+    open: 'Open',
+    skip: 'Skip',
+  },
+} as const;
+
 export default function GuidedTour({ run, onFinish, isMobile = false, onTabSwitch }: Readonly<GuidedTourProps>) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [stepIndex, setStepIndex] = useState(0);
 
   const steps = isMobile ? buildMobileSteps(t) : buildDesktopSteps(t);
@@ -97,6 +118,7 @@ export default function GuidedTour({ run, onFinish, isMobile = false, onTabSwitc
       stepIndex={stepIndex}
       continuous
       onEvent={handleEvent}
+      locale={JOYRIDE_LOCALE[lang]}
       options={{
         buttons: ['back', 'close', 'primary', 'skip'],
         showProgress: true,

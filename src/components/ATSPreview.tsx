@@ -25,10 +25,10 @@ export default function ATSPreview({ data }: Readonly<ATSPreviewProps>) {
         </section>
       )}
 
-      {data.experience.length > 0 && (
-        <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">{t.experienceAts}</h2>
-          {data.experience.map((job) => (
+      <section className="cv-ats-section">
+        <h2 className="cv-ats-heading">{t.experienceAts}</h2>
+        {data.experience.length > 0 ? (
+          data.experience.map((job) => (
             <div className="cv-ats-item" key={job.id}>
               <div className="cv-ats-item-head">
                 <span className="cv-ats-item-title">
@@ -42,14 +42,16 @@ export default function ATSPreview({ data }: Readonly<ATSPreviewProps>) {
                 </ul>
               )}
             </div>
-          ))}
-        </section>
-      )}
+          ))
+        ) : (
+          <p className="cv-ats-empty">Añade tu experiencia laboral en el editor</p>
+        )}
+      </section>
 
-      {data.education.length > 0 && (
-        <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">{t.educationAts}</h2>
-          {data.education.map((ed) => (
+      <section className="cv-ats-section">
+        <h2 className="cv-ats-heading">{t.educationAts}</h2>
+        {data.education.length > 0 ? (
+          data.education.map((ed) => (
             <div className="cv-ats-item" key={ed.id}>
               <div className="cv-ats-item-head">
                 <span className="cv-ats-item-title">
@@ -63,25 +65,27 @@ export default function ATSPreview({ data }: Readonly<ATSPreviewProps>) {
                 </ul>
               )}
             </div>
-          ))}
-        </section>
-      )}
+          ))
+        ) : (
+          <p className="cv-ats-empty">Añade tu formación académica en el editor</p>
+        )}
+      </section>
 
-      {data.languages.length > 0 && (
-        <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">{t.languagesAts}</h2>
+      <section className="cv-ats-section">
+        <h2 className="cv-ats-heading">{t.languagesAts}</h2>
+        {data.languages.length > 0 && (
           <p className="cv-ats-languages">
             {data.languages.map((l) => `${l.name} (${l.level})`).join(' · ')}
           </p>
-        </section>
-      )}
+        )}
+      </section>
 
-      {data.skills.length > 0 && (
-        <section className="cv-ats-section">
-          <h2 className="cv-ats-heading">{t.technicalSkillsAts}</h2>
+      <section className="cv-ats-section">
+        <h2 className="cv-ats-heading">{t.technicalSkillsAts}</h2>
+        {data.skills.length > 0 && (
           <p className="cv-ats-skills">{data.skills.join(' · ')}</p>
-        </section>
-      )}
+        )}
+      </section>
     </div>
   );
 }
